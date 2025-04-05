@@ -1,581 +1,595 @@
-<div class="app-container">
-  <header>
-  <h1>BabyTracker</h1>
-  <button id="themeToggle" class="theme-toggle">
-    <span class="theme-icon">🎨</span>
-    <span id="themeText">Blue</span>
-  </button>
-</header>
-  
-  <!-- Login/Register Screen -->
-  <section id="loginScreen" class="screen active">
-    <div class="welcome-card">
-      <h2>Welcome!</h2>
-      <p>Keep track of your baby's feedings, diaper changes, and more.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BabyTracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <h1>BabyTracker</h1>
+      <button id="themeToggle" class="theme-toggle">
+        <span class="theme-icon">🎨</span>
+        <span id="themeText">Blue</span>
+      </button>
+    </header>
+    
+    <!-- Login/Register Screen -->
+    <section id="loginScreen" class="screen active">
+      <div class="welcome-card">
+        <h2>Welcome!</h2>
+        <p>Keep track of your baby's feedings, diaper changes, and more.</p>
+        
+        <div id="registerForm">
+          <div class="form-group">
+            <label for="babyName">Baby's Name</label>
+            <input type="text" id="babyName" placeholder="Enter baby's name" class="form-control">
+          </div>
+          
+          <div class="form-group">
+            <label for="babyBirthday">Baby's Birthday</label>
+            <input type="date" id="babyBirthday" class="form-control">
+          </div>
+          
+          <div class="form-group">
+            <label for="parentName">Your Name</label>
+            <input type="text" id="parentName" placeholder="Enter your name" class="form-control">
+          </div>
+          
+          <div class="form-group">
+            <label for="relationship">Your Relationship to Baby</label>
+            <select id="relationship" class="form-control">
+              <option value="Mom">Mom</option>
+              <option value="Dad">Dad</option>
+              <option value="Grandparent">Grandparent</option>
+              <option value="Nanny">Nanny</option>
+              <option value="Friend">Friend</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          
+          <div id="otherRelationshipGroup" class="form-group hidden">
+            <label for="otherRelationship">Specify Relationship</label>
+            <input type="text" id="otherRelationship" placeholder="Enter your relationship" class="form-control">
+          </div>
+          
+          <button id="registerButton" class="btn btn-primary">Get Started</button>
+        </div>
+        
+        <p class="text-center mt-20">
+          <a href="#" id="showLoginLink">Already have an access code? Login here</a>
+        </p>
+      </div>
       
-      <div id="registerForm">
+      <div class="login-card hidden" id="loginCard">
+        <h2>Caregiver Login</h2>
         <div class="form-group">
-          <label for="babyName">Baby's Name</label>
-          <input type="text" id="babyName" placeholder="Enter baby's name" class="form-control">
+          <label for="accessCode">Access Code</label>
+          <input type="text" id="accessCode" placeholder="Enter access code" class="form-control">
+        </div>
+        <button id="loginButton" class="btn btn-primary">Login</button>
+        <p class="text-center mt-20">
+          <a href="#" id="backToRegister">Back to registration</a>
+        </p>
+      </div>
+    </section>
+    
+    <!-- Main App Screen -->
+    <section id="mainScreen" class="screen">
+      <div class="navbar">
+        <div class="nav-item active" data-target="dashboardContent">Dashboard</div>
+        <div class="nav-item" data-target="historyContent">History</div>
+        <div class="nav-item" data-target="galleryContent">Gallery</div>
+        <div class="nav-item" data-target="caregiversContent">Caregivers</div>
+      </div>
+      
+      <!-- Dashboard Content -->
+      <div id="dashboardContent" class="content-area active">
+        <div class="baby-info">
+          <h2 id="babyNameDisplay">Baby's Name</h2>
+          <div class="baby-age" id="babyAgeDisplay">Age: --</div>
+          <p id="currentUserInfo">Logged in as: <span id="currentUserName">Caregiver</span> (<span id="currentUserRelationship">Relationship</span>)</p>
+        </div>
+        
+        <h2>Quick Actions</h2>
+        <div class="quick-actions">
+          <button class="action-button milk" id="newMilkButton">
+            <i class="icon">🍼</i>
+            <span>Milk</span>
+          </button>
+          <button class="action-button food" id="newSolidButton">
+            <i class="icon">🥣</i>
+            <span>Food</span>
+          </button>
+          <button class="action-button diaper" id="newDiaperButton">
+            <i class="icon">👶</i>
+            <span>Diaper</span>
+          </button>
+          <button class="action-button photo" id="newPhotoButton">
+            <i class="icon">📷</i>
+            <span>Photo</span>
+          </button>
+        </div>
+        
+        <h2>Today's Activities</h2>
+        <div class="stats-container">
+          <div class="stat-card">
+            <div class="stat-title">Feedings</div>
+            <div class="stat-value" id="todayFeedingsCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Diapers</div>
+            <div class="stat-value" id="todayDiapersCount">0</div>
+          </div>
+        </div>
+        
+        <div id="todayActivities" class="activities-list">
+          <p class="empty-state">No activities recorded today</p>
+        </div>
+      </div>
+      
+      <!-- History Content -->
+      <div id="historyContent" class="content-area">
+        <h2>Activity History</h2>
+        <div class="filter-controls">
+          <select id="filterType" class="form-control">
+            <option value="all">All Activities</option>
+            <option value="milk">Milk Feeding</option>
+            <option value="solid">Solid Food</option>
+            <option value="diaper">Diaper Change</option>
+            <option value="photo">Photos</option>
+          </select>
+          <select id="filterCaregiver" class="form-control">
+            <option value="all">All Caregivers</option>
+          </select>
+          <input type="date" id="filterDate" class="form-control">
+        </div>
+        <div id="historyList" class="activities-list">
+          <p class="empty-state">No history to display</p>
+        </div>
+      </div>
+      
+      <!-- Gallery Content -->
+      <div id="galleryContent" class="content-area">
+        <h2>Development Gallery</h2>
+        <div class="gallery-filters">
+          <select id="galleryMonthFilter" class="form-control">
+            <option value="all">All Photos</option>
+            <!-- Month options will be added dynamically -->
+          </select>
+        </div>
+        <div class="add-photo-container">
+          <button id="galleryAddPhotoButton" class="btn btn-primary">Add New Photo</button>
+        </div>
+        <div id="photoGallery" class="photo-gallery">
+          <p class="empty-state">No photos added yet</p>
+        </div>
+      </div>
+      
+      <!-- Caregivers Content -->
+      <div id="caregiversContent" class="content-area">
+        <h2>Manage Caregivers</h2>
+        
+        <div class="card">
+          <h3>Add New Caregiver</h3>
+          <div class="form-group">
+            <label for="newCaregiverName">Caregiver Name</label>
+            <input type="text" id="newCaregiverName" placeholder="Caregiver's name" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="newCaregiverRelationship">Relationship to Baby</label>
+            <select id="newCaregiverRelationship" class="form-control">
+              <option value="Mom">Mom</option>
+              <option value="Dad">Dad</option>
+              <option value="Grandparent">Grandparent</option>
+              <option value="Nanny">Nanny</option>
+              <option value="Friend">Friend</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div id="newCaregiverOtherRelationshipGroup" class="form-group hidden">
+            <label for="newCaregiverOtherRelationship">Specify Relationship</label>
+            <input type="text" id="newCaregiverOtherRelationship" placeholder="Enter relationship" class="form-control">
+          </div>
+          <button id="addCaregiverButton" class="btn btn-primary">Generate Access Code</button>
+        </div>
+        
+        <div class="card">
+          <h3>Current Caregivers</h3>
+          <div id="caregiversList">
+            <p class="empty-state">No additional caregivers</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Milk Feeding Form -->
+    <section id="milkFeedingScreen" class="screen">
+      <div class="modal-header">
+        <h2>Milk Feeding</h2>
+        <button class="close-button" data-target="milkFeedingScreen">×</button>
+      </div>
+      <div class="form-container">
+        <div class="form-group">
+          <label class="switch-label">Use current time?</label>
+          <label class="switch">
+            <input type="checkbox" id="milkCurrentTime" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+        
+        <div class="form-group hidden" id="milkCustomTimeGroup">
+          <label for="milkCustomDateTime">Select Date & Time</label>
+          <input type="datetime-local" id="milkCustomDateTime" class="form-control">
         </div>
         
         <div class="form-group">
-          <label for="babyBirthday">Baby's Birthday</label>
-          <input type="date" id="babyBirthday" class="form-control">
-        </div>
-        
-        <div class="form-group">
-          <label for="parentName">Your Name</label>
-          <input type="text" id="parentName" placeholder="Enter your name" class="form-control">
-        </div>
-        
-        <div class="form-group">
-          <label for="relationship">Your Relationship to Baby</label>
-          <select id="relationship" class="form-control">
-            <option value="Mom">Mom</option>
-            <option value="Dad">Dad</option>
-            <option value="Grandparent">Grandparent</option>
-            <option value="Nanny">Nanny</option>
-            <option value="Friend">Friend</option>
-            <option value="Other">Other</option>
+          <label for="milkType">Type</label>
+          <select id="milkType" class="form-control">
+            <option value="formula">Formula</option>
+            <option value="breast">Breast Milk</option>
+            <option value="pumped">Pumped Breast Milk</option>
           </select>
         </div>
         
-        <div id="otherRelationshipGroup" class="form-group hidden">
-          <label for="otherRelationship">Specify Relationship</label>
-          <input type="text" id="otherRelationship" placeholder="Enter your relationship" class="form-control">
+        <div class="form-group">
+          <label for="milkAmount">Amount (oz)</label>
+          <input type="number" id="milkAmount" min="0" step="0.5" class="form-control">
         </div>
         
-        <button id="registerButton" class="btn btn-primary">Get Started</button>
-      </div>
-      
-      <p class="text-center mt-20">
-        <a href="#" id="showLoginLink">Already have an access code? Login here</a>
-      </p>
-    </div>
-    
-    <div class="login-card hidden" id="loginCard">
-      <h2>Caregiver Login</h2>
-      <div class="form-group">
-        <label for="accessCode">Access Code</label>
-        <input type="text" id="accessCode" placeholder="Enter access code" class="form-control">
-      </div>
-      <button id="loginButton" class="btn btn-primary">Login</button>
-      <p class="text-center mt-20">
-        <a href="#" id="backToRegister">Back to registration</a>
-      </p>
-    </div>
-  </section>
-  
-  <!-- Main App Screen -->
-  <section id="mainScreen" class="screen">
-    <div class="navbar">
-      <div class="nav-item active" data-target="dashboardContent">Dashboard</div>
-      <div class="nav-item" data-target="historyContent">History</div>
-      <div class="nav-item" data-target="galleryContent">Gallery</div>
-      <div class="nav-item" data-target="caregiversContent">Caregivers</div>
-    </div>
-    
-    <!-- Dashboard Content -->
-    <div id="dashboardContent" class="content-area active">
-      <div class="baby-info">
-        <h2 id="babyNameDisplay">Baby's Name</h2>
-        <div class="baby-age" id="babyAgeDisplay">Age: --</div>
-        <p id="currentUserInfo">Logged in as: <span id="currentUserName">Caregiver</span> (<span id="currentUserRelationship">Relationship</span>)</p>
-      </div>
-      
-      <h2>Quick Actions</h2>
-      <div class="quick-actions">
-        <button class="action-button milk" id="newMilkButton">
-          <i class="icon">🍼</i>
-          <span>Milk</span>
-        </button>
-        <button class="action-button food" id="newSolidButton">
-          <i class="icon">🥣</i>
-          <span>Food</span>
-        </button>
-        <button class="action-button diaper" id="newDiaperButton">
-          <i class="icon">👶</i>
-          <span>Diaper</span>
-        </button>
-        <button class="action-button photo" id="newPhotoButton">
-          <i class="icon">📷</i>
-          <span>Photo</span>
-        </button>
-      </div>
-      
-      <h2>Today's Activities</h2>
-      <div class="stats-container">
-        <div class="stat-card">
-          <div class="stat-title">Feedings</div>
-          <div class="stat-value" id="todayFeedingsCount">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-title">Diapers</div>
-          <div class="stat-value" id="todayDiapersCount">0</div>
-        </div>
-      </div>
-      
-      <div id="todayActivities" class="activities-list">
-        <p class="empty-state">No activities recorded today</p>
-      </div>
-    </div>
-    
-    <!-- History Content -->
-    <div id="historyContent" class="content-area">
-      <h2>Activity History</h2>
-      <div class="filter-controls">
-        <select id="filterType" class="form-control">
-          <option value="all">All Activities</option>
-          <option value="milk">Milk Feeding</option>
-          <option value="solid">Solid Food</option>
-          <option value="diaper">Diaper Change</option>
-          <option value="photo">Photos</option>
-        </select>
-        <select id="filterCaregiver" class="form-control">
-          <option value="all">All Caregivers</option>
-        </select>
-        <input type="date" id="filterDate" class="form-control">
-      </div>
-      <div id="historyList" class="activities-list">
-        <p class="empty-state">No history to display</p>
-      </div>
-    </div>
-    
-    <!-- Gallery Content -->
-    <div id="galleryContent" class="content-area">
-      <h2>Development Gallery</h2>
-      <div class="gallery-filters">
-        <select id="galleryMonthFilter" class="form-control">
-          <option value="all">All Photos</option>
-          <!-- Month options will be added dynamically -->
-        </select>
-      </div>
-      <div class="add-photo-container">
-        <button id="galleryAddPhotoButton" class="btn btn-primary">Add New Photo</button>
-      </div>
-      <div id="photoGallery" class="photo-gallery">
-        <p class="empty-state">No photos added yet</p>
-      </div>
-    </div>
-    
-    <!-- Caregivers Content -->
-    <div id="caregiversContent" class="content-area">
-      <h2>Manage Caregivers</h2>
-      
-      <div class="card">
-        <h3>Add New Caregiver</h3>
         <div class="form-group">
-          <label for="newCaregiverName">Caregiver Name</label>
-          <input type="text" id="newCaregiverName" placeholder="Caregiver's name" class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="newCaregiverRelationship">Relationship to Baby</label>
-          <select id="newCaregiverRelationship" class="form-control">
-            <option value="Mom">Mom</option>
-            <option value="Dad">Dad</option>
-            <option value="Grandparent">Grandparent</option>
-            <option value="Nanny">Nanny</option>
-            <option value="Friend">Friend</option>
-            <option value="Other">Other</option>
+          <label for="milkFeeding">Which feeding of the day?</label>
+          <select id="milkFeeding" class="form-control">
+            <option value="1">1st feeding</option>
+            <option value="2">2nd feeding</option>
+            <option value="3">3rd feeding</option>
+            <option value="4">4th feeding</option>
+            <option value="5">5th feeding</option>
+            <option value="6">6th feeding</option>
+            <option value="7">7th feeding</option>
+            <option value="8">8th feeding</option>
+            <option value="other">Other</option>
           </select>
         </div>
-        <div id="newCaregiverOtherRelationshipGroup" class="form-group hidden">
-          <label for="newCaregiverOtherRelationship">Specify Relationship</label>
-          <input type="text" id="newCaregiverOtherRelationship" placeholder="Enter relationship" class="form-control">
+        
+        <div class="form-group">
+          <label for="milkNotes">Notes (Optional)</label>
+          <textarea id="milkNotes" class="form-control" rows="3"></textarea>
         </div>
-        <button id="addCaregiverButton" class="btn btn-primary">Generate Access Code</button>
+        
+        <button id="saveMilkButton" class="btn btn-primary">Save</button>
       </div>
-      
-      <div class="card">
-        <h3>Current Caregivers</h3>
-        <div id="caregiversList">
-          <p class="empty-state">No additional caregivers</p>
-        </div>
-      </div>
-    </div>
-  </section>
-  
-  <!-- Milk Feeding Form -->
-  <section id="milkFeedingScreen" class="screen">
-    <div class="modal-header">
-      <h2>Milk Feeding</h2>
-      <button class="close-button" data-target="milkFeedingScreen">×</button>
-    </div>
-    <div class="form-container">
-      <div class="form-group">
-        <label class="switch-label">Use current time?</label>
-        <label class="switch">
-          <input type="checkbox" id="milkCurrentTime" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
-      
-      <div class="form-group hidden" id="milkCustomTimeGroup">
-        <label for="milkCustomDateTime">Select Date & Time</label>
-        <input type="datetime-local" id="milkCustomDateTime" class="form-control">
-      </div>
-      
-      <div class="form-group">
-        <label for="milkType">Type</label>
-        <select id="milkType" class="form-control">
-          <option value="formula">Formula</option>
-          <option value="breast">Breast Milk</option>
-          <option value="pumped">Pumped Breast Milk</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="milkAmount">Amount (oz)</label>
-        <input type="number" id="milkAmount" min="0" step="0.5" class="form-control">
-      </div>
-      
-      <div class="form-group">
-        <label for="milkFeeding">Which feeding of the day?</label>
-        <select id="milkFeeding" class="form-control">
-          <option value="1">1st feeding</option>
-          <option value="2">2nd feeding</option>
-          <option value="3">3rd feeding</option>
-          <option value="4">4th feeding</option>
-          <option value="5">5th feeding</option>
-          <option value="6">6th feeding</option>
-          <option value="7">7th feeding</option>
-          <option value="8">8th feeding</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="milkNotes">Notes (Optional)</label>
-        <textarea id="milkNotes" class="form-control" rows="3"></textarea>
-      </div>
-      
-      <button id="saveMilkButton" class="btn btn-primary">Save</button>
-    </div>
-  </section>
-  
-  <!-- Solid Food Form -->
-  <section id="solidFoodScreen" class="screen">
-    <div class="modal-header">
-      <h2>Solid Food</h2>
-      <button class="close-button" data-target="solidFoodScreen">×</button>
-    </div>
-    <div class="form-container">
-      <div class="form-group">
-        <label class="switch-label">Use current time?</label>
-        <label class="switch">
-          <input type="checkbox" id="solidCurrentTime" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
-      
-      <div class="form-group hidden" id="solidCustomTimeGroup">
-        <label for="solidCustomDateTime">Select Date & Time</label>
-        <input type="datetime-local" id="solidCustomDateTime" class="form-control">
-      </div>
-      
-      <div class="form-group">
-        <label for="foodDescription">Food Description</label>
-        <input type="text" id="foodDescription" class="form-control">
-      </div>
-      
-      <div class="form-group">
-        <label for="foodAmount">Amount (Optional)</label>
-        <input type="text" id="foodAmount" class="form-control">
-      </div>
-      
-      <div class="form-group">
-        <label for="solidFeeding">Which meal of the day?</label>
-        <select id="solidFeeding" class="form-control">
-          <option value="breakfast">Breakfast</option>
-          <option value="morning_snack">Morning Snack</option>
-          <option value="lunch">Lunch</option>
-          <option value="afternoon_snack">Afternoon Snack</option>
-          <option value="dinner">Dinner</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="foodNotes">Notes (Optional)</label>
-        <textarea id="foodNotes" class="form-control" rows="3"></textarea>
-      </div>
-      
-      <button id="saveSolidButton" class="btn btn-primary">Save</button>
-    </div>
-  </section>
-  
-  <!-- Diaper Change Form -->
-  <section id="diaperChangeScreen" class="screen">
-    <div class="modal-header">
-      <h2>Diaper Change</h2>
-      <button class="close-button" data-target="diaperChangeScreen">×</button>
-    </div>
-    <div class="form-container">
-      <div class="form-group">
-        <label class="switch-label">Use current time?</label>
-        <label class="switch">
-          <input type="checkbox" id="diaperCurrentTime" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
-      
-      <div class="form-group hidden" id="diaperCustomTimeGroup">
-        <label for="diaperCustomDateTime">Select Date & Time</label>
-        <input type="datetime-local" id="diaperCustomDateTime" class="form-control">
-      </div>
-      
-      <div class="form-group">
-        <label for="diaperType">Type</label>
-        <select id="diaperType" class="form-control">
-          <option value="wet">Wet</option>
-          <option value="dirty">Dirty</option>
-          <option value="both">Both</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="diaperChange">Which diaper change of the day?</label>
-        <select id="diaperChange" class="form-control">
-          <option value="1">1st change</option>
-          <option value="2">2nd change</option>
-          <option value="3">3rd change</option>
-          <option value="4">4th change</option>
-          <option value="5">5th change</option>
-          <option value="6">6th change</option>
-          <option value="7">7th change</option>
-          <option value="8">8th change</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="diaperNotes">Notes (Optional)</label>
-        <textarea id="diaperNotes" class="form-control" rows="3"></textarea>
-      </div>
-      
-      <button id="saveDiaperButton" class="btn btn-primary">Save</button>
-    </div>
-  </section>
-  
-  <!-- Photo Upload Form -->
-  <section id="photoScreen" class="screen">
-    <div class="modal-header">
-      <h2>Add Development Photo</h2>
-      <button class="close-button" data-target="photoScreen">×</button>
-    </div>
-    <div class="form-container">
-      <div class="form-group">
-        <label class="switch-label">Use current date?</label>
-        <label class="switch">
-          <input type="checkbox" id="photoCurrentDate" checked>
-          <span class="slider round"></span>
-        </label>
-      </div>
-      
-      <div class="form-group hidden" id="photoCustomDateGroup">
-        <label for="photoCustomDate">Select Date</label>
-        <input type="date" id="photoCustomDate" class="form-control">
-      </div>
-      
-      <div class="form-group">
-        <label for="photoTitle">Photo Title</label>
-        <input type="text" id="photoTitle" class="form-control" placeholder="e.g., '3 Month Milestone'">
-      </div>
-      
-      <div class="form-group">
-        <label for="photoUrl">Photo URL</label>
-        <input type="text" id="photoUrl" class="form-control" placeholder="Enter direct image URL">
-        <p class="hint">For CodePen: Use a direct image URL from sites like imgur.com</p>
-      </div>
-      
-      <div class="form-group">
-        <label for="photoNotes">Notes (Optional)</label>
-        <textarea id="photoNotes" class="form-control" rows="3"></textarea>
-      </div>
-      
-      <button id="savePhotoButton" class="btn btn-primary">Save Photo</button>
-    </div>
-  </section>
-  
-  <!-- Access Code Modal -->
-  <section id="accessCodeScreen" class="screen">
-    <div class="modal-content">
+    </section>
+    
+    <!-- Solid Food Form -->
+    <section id="solidFoodScreen" class="screen">
       <div class="modal-header">
-        <h2>Access Code Generated</h2>
-        <button class="close-button" data-target="accessCodeScreen">×</button>
+        <h2>Solid Food</h2>
+        <button class="close-button" data-target="solidFoodScreen">×</button>
       </div>
-      <div class="modal-body">
-        <p>Share this code with the caregiver:</p>
-        <div class="access-code" id="generatedAccessCode">CODE</div>
-        <p>They'll need to enter this code to access your baby's information.</p>
+      <div class="form-container">
+        <div class="form-group">
+          <label class="switch-label">Use current time?</label>
+          <label class="switch">
+            <input type="checkbox" id="solidCurrentTime" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+        
+        <div class="form-group hidden" id="solidCustomTimeGroup">
+          <label for="solidCustomDateTime">Select Date & Time</label>
+          <input type="datetime-local" id="solidCustomDateTime" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="foodDescription">Food Description</label>
+          <input type="text" id="foodDescription" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="foodAmount">Amount (Optional)</label>
+          <input type="text" id="foodAmount" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="solidFeeding">Which meal of the day?</label>
+          <select id="solidFeeding" class="form-control">
+            <option value="breakfast">Breakfast</option>
+            <option value="morning_snack">Morning Snack</option>
+            <option value="lunch">Lunch</option>
+            <option value="afternoon_snack">Afternoon Snack</option>
+            <option value="dinner">Dinner</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="foodNotes">Notes (Optional)</label>
+          <textarea id="foodNotes" class="form-control" rows="3"></textarea>
+        </div>
+        
+        <button id="saveSolidButton" class="btn btn-primary">Save</button>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary close-modal" data-target="accessCodeScreen">Close</button>
-      </div>
-    </div>
-  </section>
-  
-  <!-- Photo View Modal -->
-  <section id="photoViewScreen" class="screen">
-    <div class="modal-content photo-modal">
+    </section>
+    
+    <!-- Diaper Change Form -->
+    <section id="diaperChangeScreen" class="screen">
       <div class="modal-header">
-        <h2 id="photoViewTitle">Photo</h2>
-        <button class="close-button" data-target="photoViewScreen">×</button>
+        <h2>Diaper Change</h2>
+        <button class="close-button" data-target="diaperChangeScreen">×</button>
       </div>
-      <div class="modal-body">
-        <div class="photo-view-container">
-          <img id="photoViewImage" src="" alt="Baby photo">
+      <div class="form-container">
+        <div class="form-group">
+          <label class="switch-label">Use current time?</label>
+          <label class="switch">
+            <input type="checkbox" id="diaperCurrentTime" checked>
+            <span class="slider round"></span>
+          </label>
         </div>
-        <div class="photo-details">
-          <div class="photo-date" id="photoViewDate"></div>
-          <div class="photo-age" id="photoViewAge"></div>
-          <div class="photo-notes" id="photoViewNotes"></div>
+        
+        <div class="form-group hidden" id="diaperCustomTimeGroup">
+          <label for="diaperCustomDateTime">Select Date & Time</label>
+          <input type="datetime-local" id="diaperCustomDateTime" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="diaperType">Type</label>
+          <select id="diaperType" class="form-control">
+            <option value="wet">Wet</option>
+            <option value="dirty">Dirty</option>
+            <option value="both">Both</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="diaperChange">Which diaper change of the day?</label>
+          <select id="diaperChange" class="form-control">
+            <option value="1">1st change</option>
+            <option value="2">2nd change</option>
+            <option value="3">3rd change</option>
+            <option value="4">4th change</option>
+            <option value="5">5th change</option>
+            <option value="6">6th change</option>
+            <option value="7">7th change</option>
+            <option value="8">8th change</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="diaperNotes">Notes (Optional)</label>
+          <textarea id="diaperNotes" class="form-control" rows="3"></textarea>
+        </div>
+        
+        <button id="saveDiaperButton" class="btn btn-primary">Save</button>
+      </div>
+    </section>
+    
+    <!-- Photo Upload Form -->
+    <section id="photoScreen" class="screen">
+      <div class="modal-header">
+        <h2>Add Development Photo</h2>
+        <button class="close-button" data-target="photoScreen">×</button>
+      </div>
+      <div class="form-container">
+        <div class="form-group">
+          <label class="switch-label">Use current date?</label>
+          <label class="switch">
+            <input type="checkbox" id="photoCurrentDate" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+        
+        <div class="form-group hidden" id="photoCustomDateGroup">
+          <label for="photoCustomDate">Select Date</label>
+          <input type="date" id="photoCustomDate" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="photoTitle">Photo Title</label>
+          <input type="text" id="photoTitle" class="form-control" placeholder="e.g., '3 Month Milestone'">
+        </div>
+        
+        <div class="form-group">
+          <label for="photoUrl">Photo URL</label>
+          <input type="text" id="photoUrl" class="form-control" placeholder="Enter direct image URL">
+          <p class="hint">For CodePen: Use a direct image URL from sites like imgur.com</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="photoNotes">Notes (Optional)</label>
+          <textarea id="photoNotes" class="form-control" rows="3"></textarea>
+        </div>
+        
+        <button id="savePhotoButton" class="btn btn-primary">Save Photo</button>
+      </div>
+    </section>
+    
+    <!-- Access Code Modal -->
+    <section id="accessCodeScreen" class="screen">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Access Code Generated</h2>
+          <button class="close-button" data-target="accessCodeScreen">×</button>
+        </div>
+        <div class="modal-body">
+          <p>Share this code with the caregiver:</p>
+          <div class="access-code" id="generatedAccessCode">CODE</div>
+          <p>They'll need to enter this code to access your baby's information.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary close-modal" data-target="accessCodeScreen">Close</button>
         </div>
       </div>
-    </div>
-  </section>
-<!-- Edit Milk Feeding Form -->
-<section id="editMilkScreen" class="screen">
-  <div class="modal-header">
-    <h2>Edit Milk Feeding</h2>
-    <button class="close-button" data-target="editMilkScreen">×</button>
+    </section>
+    
+    <!-- Photo View Modal -->
+    <section id="photoViewScreen" class="screen">
+      <div class="modal-content photo-modal">
+        <div class="modal-header">
+          <h2 id="photoViewTitle">Photo</h2>
+          <button class="close-button" data-target="photoViewScreen">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="photo-view-container">
+            <img id="photoViewImage" src="" alt="Baby photo">
+          </div>
+          <div class="photo-details">
+            <div class="photo-date" id="photoViewDate"></div>
+            <div class="photo-age" id="photoViewAge"></div>
+            <div class="photo-notes" id="photoViewNotes"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Edit Milk Feeding Form -->
+    <section id="editMilkScreen" class="screen">
+      <div class="modal-header">
+        <h2>Edit Milk Feeding</h2>
+        <button class="close-button" data-target="editMilkScreen">×</button>
+      </div>
+      <div class="form-container">
+        <input type="hidden" id="editMilkId">
+        
+        <div class="form-group">
+          <label for="editMilkDateTime">Date & Time</label>
+          <input type="datetime-local" id="editMilkDateTime" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="editMilkType">Type</label>
+          <select id="editMilkType" class="form-control">
+            <option value="formula">Formula</option>
+            <option value="breast">Breast Milk</option>
+            <option value="pumped">Pumped Breast Milk</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="editMilkAmount">Amount (oz)</label>
+          <input type="number" id="editMilkAmount" min="0" step="0.5" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="editMilkFeeding">Which feeding of the day?</label>
+          <select id="editMilkFeeding" class="form-control">
+            <option value="1">1st feeding</option>
+            <option value="2">2nd feeding</option>
+            <option value="3">3rd feeding</option>
+            <option value="4">4th feeding</option>
+            <option value="5">5th feeding</option>
+            <option value="6">6th feeding</option>
+            <option value="7">7th feeding</option>
+            <option value="8">8th feeding</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="editMilkNotes">Notes (Optional)</label>
+          <textarea id="editMilkNotes" class="form-control" rows="3"></textarea>
+        </div>
+        
+        <button id="updateMilkButton" class="btn btn-primary">Update</button>
+      </div>
+    </section>
+    
+    <!-- Edit Solid Food Form -->
+    <section id="editSolidScreen" class="screen">
+      <div class="modal-header">
+        <h2>Edit Solid Food</h2>
+        <button class="close-button" data-target="editSolidScreen">×</button>
+      </div>
+      <div class="form-container">
+        <input type="hidden" id="editSolidId">
+        
+        <div class="form-group">
+          <label for="editSolidDateTime">Date & Time</label>
+          <input type="datetime-local" id="editSolidDateTime" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="editFoodDescription">Food Description</label>
+          <input type="text" id="editFoodDescription" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="editFoodAmount">Amount (Optional)</label>
+          <input type="text" id="editFoodAmount" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="editSolidFeeding">Which meal of the day?</label>
+          <select id="editSolidFeeding" class="form-control">
+            <option value="breakfast">Breakfast</option>
+            <option value="morning_snack">Morning Snack</option>
+            <option value="lunch">Lunch</option>
+            <option value="afternoon_snack">Afternoon Snack</option>
+            <option value="dinner">Dinner</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="editFoodNotes">Notes (Optional)</label>
+          <textarea id="editFoodNotes" class="form-control" rows="3"></textarea>
+        </div>
+        
+        <button id="updateSolidButton" class="btn btn-primary">Update</button>
+      </div>
+    </section>
+    
+    <!-- Edit Diaper Change Form -->
+    <section id="editDiaperScreen" class="screen">
+      <div class="modal-header">
+        <h2>Edit Diaper Change</h2>
+        <button class="close-button" data-target="editDiaperScreen">×</button>
+      </div>
+      <div class="form-container">
+        <input type="hidden" id="editDiaperId">
+        
+        <div class="form-group">
+          <label for="editDiaperDateTime">Date & Time</label>
+          <input type="datetime-local" id="editDiaperDateTime" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="editDiaperType">Type</label>
+          <select id="editDiaperType" class="form-control">
+            <option value="wet">Wet</option>
+            <option value="dirty">Dirty</option>
+            <option value="both">Both</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="editDiaperChange">Which diaper change of the day?</label>
+          <select id="editDiaperChange" class="form-control">
+            <option value="1">1st change</option>
+            <option value="2">2nd change</option>
+            <option value="3">3rd change</option>
+            <option value="4">4th change</option>
+            <option value="5">5th change</option>
+            <option value="6">6th change</option>
+            <option value="7">7th change</option>
+            <option value="8">8th change</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="editDiaperNotes">Notes (Optional)</label>
+          <textarea id="editDiaperNotes" class="form-control" rows="3"></textarea>
+        </div>
+        
+        <button id="updateDiaperButton" class="btn btn-primary">Update</button>
+      </div>
+    </section>
   </div>
-  <div class="form-container">
-    <input type="hidden" id="editMilkId">
-    
-    <div class="form-group">
-      <label for="editMilkDateTime">Date & Time</label>
-      <input type="datetime-local" id="editMilkDateTime" class="form-control">
-    </div>
-    
-    <div class="form-group">
-      <label for="editMilkType">Type</label>
-      <select id="editMilkType" class="form-control">
-        <option value="formula">Formula</option>
-        <option value="breast">Breast Milk</option>
-        <option value="pumped">Pumped Breast Milk</option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label for="editMilkAmount">Amount (oz)</label>
-      <input type="number" id="editMilkAmount" min="0" step="0.5" class="form-control">
-    </div>
-    
-    <div class="form-group">
-      <label for="editMilkFeeding">Which feeding of the day?</label>
-      <select id="editMilkFeeding" class="form-control">
-        <option value="1">1st feeding</option>
-        <option value="2">2nd feeding</option>
-        <option value="3">3rd feeding</option>
-        <option value="4">4th feeding</option>
-        <option value="5">5th feeding</option>
-        <option value="6">6th feeding</option>
-        <option value="7">7th feeding</option>
-        <option value="8">8th feeding</option>
-        <option value="other">Other</option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label for="editMilkNotes">Notes (Optional)</label>
-      <textarea id="editMilkNotes" class="form-control" rows="3"></textarea>
-    </div>
-    
-    <button id="updateMilkButton" class="btn btn-primary">Update</button>
-  </div>
-</section>
-
-<!-- Edit Solid Food Form -->
-<section id="editSolidScreen" class="screen">
-  <div class="modal-header">
-    <h2>Edit Solid Food</h2>
-    <button class="close-button" data-target="editSolidScreen">×</button>
-  </div>
-  <div class="form-container">
-    <input type="hidden" id="editSolidId">
-    
-    <div class="form-group">
-      <label for="editSolidDateTime">Date & Time</label>
-      <input type="datetime-local" id="editSolidDateTime" class="form-control">
-    </div>
-    
-    <div class="form-group">
-      <label for="editFoodDescription">Food Description</label>
-      <input type="text" id="editFoodDescription" class="form-control">
-    </div>
-    
-    <div class="form-group">
-      <label for="editFoodAmount">Amount (Optional)</label>
-      <input type="text" id="editFoodAmount" class="form-control">
-    </div>
-    
-    <div class="form-group">
-      <label for="editSolidFeeding">Which meal of the day?</label>
-      <select id="editSolidFeeding" class="form-control">
-        <option value="breakfast">Breakfast</option>
-        <option value="morning_snack">Morning Snack</option>
-        <option value="lunch">Lunch</option>
-        <option value="afternoon_snack">Afternoon Snack</option>
-        <option value="dinner">Dinner</option>
-        <option value="other">Other</option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label for="editFoodNotes">Notes (Optional)</label>
-      <textarea id="editFoodNotes" class="form-control" rows="3"></textarea>
-    </div>
-    
-    <button id="updateSolidButton" class="btn btn-primary">Update</button>
-  </div>
-</section>
-
-<!-- Edit Diaper Change Form -->
-<section id="editDiaperScreen" class="screen">
-  <div class="modal-header">
-    <h2>Edit Diaper Change</h2>
-    <button class="close-button" data-target="editDiaperScreen">×</button>
-  </div>
-  <div class="form-container">
-    <input type="hidden" id="editDiaperId">
-    
-    <div class="form-group">
-      <label for="editDiaperDateTime">Date & Time</label>
-      <input type="datetime-local" id="editDiaperDateTime" class="form-control">
-    </div>
-    
-    <div class="form-group">
-      <label for="editDiaperType">Type</label>
-      <select id="editDiaperType" class="form-control">
-        <option value="wet">Wet</option>
-        <option value="dirty">Dirty</option>
-        <option value="both">Both</option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label for="editDiaperChange">Which diaper change of the day?</label>
-      <select id="editDiaperChange" class="form-control">
-        <option value="1">1st change</option>
-        <option value="2">2nd change</option>
-        <option value="3">3rd change</option>
-        <option value="4">4th change</option>
-        <option value="5">5th change</option>
-        <option value="6">6th change</option>
-        <option value="7">7th change</option>
-        <option value="8">8th change</option>
-        <option value="other">Other</option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label for="editDiaperNotes">Notes (Optional)</label>
-      <textarea id="editDiaperNotes" class="form-control" rows="3"></textarea>
-    </div>
-    
-    <button id="updateDiaperButton" class="btn btn-primary">Update</button>
-  </div>
-</section>
-</div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
