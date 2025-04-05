@@ -1,18 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap');
 
-:root {
-  /* Default Theme: Pink */
-  --primary-color: #ff9fb6;
-  --primary-dark: #ff8ca8;
-  --secondary-color: #9fd8ff;
-  --accent-color: #ffca9f;
-  --bg-color: #f8f9fa;
-  --card-bg: #ffffff;
-  --text-color: #333333;
-  --text-muted: #6c757d;
-  --border-radius: 15px;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+:root { 
+  /* Default Theme: Pink */ 
+  --primary-color: #ff9fb6; 
+  --primary-dark: #ff8ca8; 
+  --secondary-color: #9fd8ff; 
+  --accent-color: #ffca9f; 
+  --bg-color: #f8f9fa; 
+  --card-bg: #ffffff; 
+  --text-color: #333333; 
+  --text-muted: #6c757d; 
+  --border-radius: 15px; 
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
   --transition: all 0.3s ease;
+  
+  /* RGB Values for gradients */
+  --primary-color-rgb: 255, 159, 182;
+  --secondary-color-rgb: 159, 216, 255;
+  --accent-color-rgb: 255, 202, 159;
 }
 
 /* Blue Theme Classes */
@@ -21,12 +26,15 @@
   --primary-dark: #4a9eff;
   --secondary-color: #ff9fb6;
   --accent-color: #9fffe5;
+  --primary-color-rgb: 106, 183, 255;
+  --secondary-color-rgb: 255, 159, 182;
+  --accent-color-rgb: 159, 255, 229;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
 }
 
 body {
@@ -55,24 +63,24 @@ header {
   position: relative;
 }
 
-.theme-toggle {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(255, 255, 255, 0.3);
-  border: none;
-  border-radius: 50px;
-  padding: 5px 10px;
-  font-size: 0.8rem;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+.theme-toggle { 
+  position: absolute; 
+  top: 10px; 
+  right: 10px; 
+  background: rgba(255, 255, 255, 0.3); 
+  border: none; 
+  border-radius: 50px; 
+  padding: 5px 10px; 
+  font-size: 0.8rem; 
+  color: white; 
+  cursor: pointer; 
+  display: flex; 
+  align-items: center; 
+  gap: 5px; 
 }
 
-.theme-toggle:hover {
-  background: rgba(255, 255, 255, 0.5);
+.theme-toggle:hover { 
+  background: rgba(255, 255, 255, 0.5); 
 }
 
 .theme-icon {
@@ -175,10 +183,10 @@ label {
   transition: var(--transition);
 }
 
-.form-control:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb, 255, 159, 182), 0.2);
+.form-control:focus { 
+  outline: none; 
+  border-color: var(--primary-color); 
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.2); 
 }
 
 .hint {
@@ -251,9 +259,9 @@ a:hover {
   font-size: 0.9rem;
 }
 
-.nav-item.active {
-  background: linear-gradient(135deg, rgba(var(--primary-color-rgb, 255, 159, 182), 0.2), rgba(var(--secondary-color-rgb, 159, 216, 255), 0.2));
-  color: var(--primary-color);
+.nav-item.active { 
+  background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.2), rgba(var(--secondary-color-rgb), 0.2)); 
+  color: var(--primary-color); 
 }
 
 .content-area {
@@ -296,24 +304,24 @@ a:hover {
   font-weight: 600;
 }
 
-.action-button.milk {
-  background: linear-gradient(135deg, rgba(var(--primary-color-rgb, 255, 159, 182), 0.1), #fff);
-  color: var(--primary-color);
+.action-button.milk { 
+  background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.1), #fff); 
+  color: var(--primary-color); 
 }
 
-.action-button.food {
-  background: linear-gradient(135deg, rgba(var(--secondary-color-rgb, 159, 216, 255), 0.1), #fff);
-  color: var(--secondary-color);
+.action-button.food { 
+  background: linear-gradient(135deg, rgba(var(--secondary-color-rgb), 0.1), #fff); 
+  color: var(--secondary-color); 
 }
 
-.action-button.diaper {
-  background: linear-gradient(135deg, rgba(var(--accent-color-rgb, 255, 202, 159), 0.1), #fff);
-  color: var(--accent-color);
+.action-button.diaper { 
+  background: linear-gradient(135deg, rgba(var(--accent-color-rgb), 0.1), #fff); 
+  color: var(--accent-color); 
 }
 
-.action-button.photo {
-  background: linear-gradient(135deg, rgba(124, 216, 150, 0.1), #fff);
-  color: #7cd896;
+.action-button.photo { 
+  background: linear-gradient(135deg, rgba(124, 216, 150, 0.1), #fff); 
+  color: #7cd896; 
 }
 
 .action-button:hover {
@@ -436,6 +444,7 @@ a:hover {
 }
 
 /* Gallery Styles */
+
 .gallery-filters {
   margin-bottom: 1rem;
 }
@@ -490,6 +499,7 @@ a:hover {
 }
 
 /* Photo View Modal */
+
 .photo-modal {
   max-width: 90%;
   margin: 2rem auto;
@@ -518,6 +528,7 @@ a:hover {
 }
 
 /* Toggle Switch Styling */
+
 .switch-label {
   display: inline-block;
   margin-right: 10px;
@@ -563,8 +574,8 @@ input:checked + .slider {
   background-color: var(--primary-color);
 }
 
-input:focus + .slider {
-  box-shadow: 0 0 1px var(--primary-color);
+input:focus + .slider { 
+  box-shadow: 0 0 1px var(--primary-color); 
 }
 
 input:checked + .slider:before {
@@ -602,6 +613,7 @@ input:checked + .slider:before {
 }
 
 /* Access Code Modal */
+
 .modal-content {
   background: var(--card-bg);
   border-radius: var(--border-radius);
@@ -637,6 +649,7 @@ input:checked + .slider:before {
 }
 
 /* Edit/Delete button styles */
+
 .activity-actions {
   position: absolute;
   top: 10px;
@@ -663,9 +676,9 @@ input:checked + .slider:before {
   color: #dc3545;
 }
 
-.edit-button:hover, .delete-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  transform: scale(1.1);
+.edit-button:hover, .delete-button:hover { 
+  background-color: rgba(0, 0, 0, 0.05); 
+  transform: scale(1.1); 
 }
 
 @keyframes fadeIn {
