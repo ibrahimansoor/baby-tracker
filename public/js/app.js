@@ -61,9 +61,33 @@ export function render() {
     html = VIEWS[tab]();
   }
   const key = `${phase}|${!!store.me}|${tab}`;
-  if (view.dataset.key !== key) { view.dataset.key = key; view.classList.remove('enter'); void view.offsetWidth; view.classList.add('enter'); }
+  const sameScreen = view.dataset.key === key;
+  // Keep anything typed into a form on this screen when it redraws (e.g. after a background sync)
+  const typed = sameScreen ? snapshotForm(view) : null;
+  if (!sameScreen) { view.dataset.key = key; view.classList.remove('enter'); void view.offsetWidth; view.classList.add('enter'); }
   view.innerHTML = html;
+  if (typed) restoreForm(view, typed);
   tick();
+}
+
+function snapshotForm(root) {
+  const fields = {}, segs = {};
+  $$('input[id], select[id], textarea[id]', root).forEach((el) => {
+    if (el.type !== 'file') fields[el.id] = el.type === 'checkbox' || el.type === 'radio' ? el.checked : el.value;
+  });
+  $$('[data-seg]', root).forEach((el) => { const on = $('.on', el); if (on) segs[el.dataset.seg] = on.dataset.v; });
+  return { fields, segs };
+}
+function restoreForm(root, { fields, segs }) {
+  Object.entries(fields).forEach(([id, v]) => {
+    const el = root.querySelector(`#${CSS.escape(id)}`);
+    if (!el) return;
+    if (el.type === 'checkbox' || el.type === 'radio') el.checked = v; else el.value = v;
+  });
+  Object.entries(segs).forEach(([name, v]) => {
+    const seg = root.querySelector(`[data-seg="${CSS.escape(name)}"]`);
+    if (seg) $$('button', seg).forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+  });
 }
 
 function go(t) {
