@@ -100,7 +100,7 @@ export function avatar({ name, url, size = 40, cls = '' }) {
 // ---------- Small form helpers ----------
 export const field = (label, inner, hint = '') => `<div class="field"><label>${label}</label>${inner}${hint ? `<div class="hint">${hint}</div>` : ''}</div>`;
 export const optional = '<span class="muted" style="font-weight:500">(optional)</span>';
-export const emptyState = (title, text, ico = 'i-tomato') => `<div class="empty">${icon(ico)}<p class="it">${esc(title)}</p><p class="small">${text}</p></div>`;
+export const emptyState = (title, text, ico = 'i-tomato') => `<div class="empty">${ico === 'i-tomato' ? '<img class="empty-mark" src="/brand/mark.webp" alt="" width="56" height="55" loading="lazy">' : icon(ico)}<p class="it">${esc(title)}</p><p class="small">${text}</p></div>`;
 
 export function segmented(name, options, value) {
   return `<div class="seg" data-seg="${name}">${options.map(([v, l]) => `<button type="button" data-v="${esc(v)}" class="${String(value) === String(v) ? 'on' : ''}">${l}</button>`).join('')}</div>`;

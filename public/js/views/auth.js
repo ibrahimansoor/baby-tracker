@@ -42,8 +42,7 @@ function inviteBanner() {
 export function renderAuth() {
   const m = authState.mode;
   const head = `<section class="welcome">
-      <svg class="big-tomato"><use href="#i-tomato"/></svg>
-      <h1>My Little <em>Pomodoro</em></h1>
+      <div class="logo-plate"><img class="brand-logo" src="/brand/logo.webp" alt="My Little Pomodoro" width="631" height="640" decoding="async"></div>
       <p class="tag">Every feed, nap, diaper, photo and milestone — shared with the people who love your baby.</p>
     </section>`;
   if (m === 'reset') {
@@ -179,11 +178,11 @@ function legacyToEntry(e, babyId) {
 export function renderOnboarding(canEdit) {
   const legacy = readLegacy();
   if (!canEdit) {
-    return `<section class="welcome"><svg class="big-tomato"><use href="#i-tomato"/></svg>
+    return `<section class="welcome"><img class="big-mark" src="/brand/mark.webp" alt="" width="320" height="312" decoding="async">
       <h1>Almost there</h1><p class="tag">You have view-only access. A family admin needs to add the baby first — it will appear here automatically.</p></section>`;
   }
   return `<section class="welcome">
-      <svg class="big-tomato"><use href="#i-tomato"/></svg>
+      <img class="big-mark" src="/brand/mark.webp" alt="" width="320" height="312" decoding="async">
       <div class="eyebrow">Welcome, ${esc(store.me.name.split(' ')[0])}</div>
       <h1>Tell us about your <em>baby</em></h1>
     </section>

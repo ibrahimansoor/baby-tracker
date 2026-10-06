@@ -886,3 +886,14 @@ button, .chip, .action, .entry, .tabbar button, label.chip, .skin, .ph {
 /* Long names never push layouts wider */
 .hero-id h1, .lr-main b, .entry .title, .brand-name { overflow-wrap: anywhere; }
 .entry .title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+
+/* ---------- Brand (logo) ---------- */
+.brand-mark { width: 40px; height: auto; object-fit: contain; filter: drop-shadow(0 3px 5px rgba(232, 65, 44, .22)); }
+.big-mark { display: block; width: 116px; height: auto; margin: 10px auto 10px; filter: drop-shadow(0 16px 20px rgba(232, 65, 44, .28)); animation: bob 4s ease-in-out infinite; }
+.splash .big-mark { width: 92px; animation-duration: 1.6s; }
+.logo-plate { width: min(232px, 64vw); margin: 4px auto 0; }
+.brand-logo { display: block; width: 100%; height: auto; filter: drop-shadow(0 14px 22px rgba(232, 65, 44, .18)); }
+/* Dark mode: a soft light plate keeps the green wordmark readable */
+:root[data-theme="dark"] .logo-plate { background: #FFFFFF; border-radius: 32px; padding: 18px 22px 14px; box-shadow: 0 18px 40px -18px rgba(0,0,0,.6); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .logo-plate { background: #FFFFFF; border-radius: 32px; padding: 18px 22px 14px; box-shadow: 0 18px 40px -18px rgba(0,0,0,.6); } }
+.empty .empty-mark { width: 56px; height: auto; opacity: .9; }

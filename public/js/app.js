@@ -31,7 +31,7 @@ function header() {
 
 function inviteAcceptScreen() {
   const i = authState.inviteInfo;
-  return `<section class="welcome"><svg class="big-tomato"><use href="#i-tomato"/></svg>
+  return `<section class="welcome"><img class="big-mark" src="/brand/mark.webp" alt="" width="320" height="312" decoding="async">
     <h1>You're invited 💌</h1>
     ${i.error ? `<p class="tag">${esc(i.error)}</p><button class="btn btn-ghost" data-act="dismiss-invite">Continue</button>`
       : `<p class="tag"><b>${esc(i.inviter || 'Someone')}</b> invited you to join <b>${esc(i.family)}</b> as <b>${ROLE_LABEL[i.role]}</b>.</p>
@@ -51,7 +51,7 @@ export function render() {
   header();
   const tabbar = $('#tabbar');
   let html;
-  if (phase === 'loading') { html = '<div class="splash"><svg class="big-tomato"><use href="#i-tomato"/></svg></div>'; tabbar.hidden = true; }
+  if (phase === 'loading') { html = '<div class="splash"><img class="big-mark" src="/brand/mark.webp" alt="" width="320" height="312"></div>'; tabbar.hidden = true; }
   else if (!store.me) { html = renderAuth(); tabbar.hidden = true; }
   else if (authState.invite && authState.inviteInfo) { html = inviteAcceptScreen(); tabbar.hidden = true; }
   else if (!baby()) { html = renderOnboarding(canEdit()); tabbar.hidden = true; }
