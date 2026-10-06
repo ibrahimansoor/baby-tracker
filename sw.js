@@ -1,6 +1,6 @@
 // My Little Pomodoro — offline support.
 // Network first (so updates arrive right away), cached copy when offline.
-const CACHE = 'pomodoro-v2';
+const CACHE = 'pomodoro-v3';
 const SHELL = ['./', 'index.html', 'style.css', 'script.js', 'icon.svg', 'manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {

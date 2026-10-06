@@ -15,7 +15,7 @@
     baby: null,                 // { name, birth: 'YYYY-MM-DD' }
     entries: [],                // see TYPES below
     timer: null,                // { startedAt, side: 'L'|'R'|null, sideStart, acc: {L, R} }
-    settings: { theme: 'auto', unit: 'ml' }
+    settings: { theme: 'auto', unit: 'ml', skin: 'pomodoro' }
   });
 
   let state = load();
@@ -59,6 +59,17 @@
     { id: 'white',  name: 'Pale',    hex: '#E8E2D2', warn: true }
   ];
   const TEXTURES = ['Seedy', 'Soft', 'Runny', 'Pasty', 'Hard'];
+
+  // Six Italian-inspired themes. Colours, fonts & patterns live in style.css under [data-skin].
+  const SKINS = [
+    { id: 'pomodoro', name: 'Pomodoro', tag: 'Tomato red & Aperol sunset', font: 'Outfit + Inter', dots: ['#E8412C', '#FF8A1F', '#F4F5F7', '#0F1115'] },
+    { id: 'positano', name: 'Positano', tag: 'Cobalt sea & majolica waves', font: 'Plus Jakarta Sans', dots: ['#1238B8', '#22B3D6', '#F2F6FC', '#FFFFFF'] },
+    { id: 'limone', name: 'Limone', tag: 'Amalfi lemons & leaf green', font: 'Sora + DM Sans', dots: ['#FFD12E', '#2F7A3E', '#F5F7F2', '#1E2A14'] },
+    { id: 'milano', name: 'Milano', tag: 'Black, white & gold — editorial', font: 'Instrument Serif + Onest', dots: ['#0E0E0E', '#D8B871', '#F6F6F6', '#FFFFFF'] },
+    { id: 'toscana', name: 'Toscana', tag: 'Terracotta, olive & sage', font: 'Bricolage Grotesque + Figtree', dots: ['#B5432A', '#D0683C', '#8F9B5A', '#F4F5F1'] },
+    { id: 'gelato', name: 'Gelato', tag: 'Strawberry & pistachio pastels', font: 'Fredoka + Nunito', dots: ['#FFB8CF', '#C8EFB4', '#E8457A', '#FBF7FA'] }
+  ];
+  const skinOf = (id) => SKINS.find((k) => k.id === id) || SKINS[0];
 
   // ---------- Helpers ----------
   const $ = (s, el = document) => el.querySelector(s);
@@ -304,7 +315,7 @@
 
     return `
       <section class="card hero">
-        <svg class="hero-tile" aria-hidden="true"><rect width="100%" height="100%" fill="url(#tile)"/></svg>
+        <svg class="hero-tile" aria-hidden="true"><rect width="100%" height="100%"/></svg>
         <div class="eyebrow">${greeting()}</div>
         <h1>${esc(state.baby.name)}</h1>
         <div class="age">${ageText()}</div>
@@ -556,6 +567,10 @@
       </form>
 
       <div class="card set-list" style="margin-top:14px;padding:0">
+        <button type="button" class="set-row" data-act="themes" style="width:100%;background:none;border:0;border-bottom:1px solid var(--line);text-align:left">
+          <div class="theme-row"><span class="mini-hero"></span><div><div class="t">Theme · ${skinOf(st.skin).name}</div><div class="d">${skinOf(st.skin).tag}</div></div></div>
+          <span class="chip">Change</span>
+        </button>
         <div class="set-row"><div><div class="t">Appearance</div><div class="d">Dark mode is easy on tired eyes</div></div>${seg('theme', [['auto', 'Auto'], ['light', 'Light'], ['dark', 'Dark']])}</div>
         <div class="set-row"><div><div class="t">Volume unit</div><div class="d">For bottles &amp; formula</div></div>${seg('unit', [['ml', 'ml'], ['oz', 'oz']])}</div>
       </div>
@@ -564,7 +579,7 @@
         <div class="set-row"><div><div class="t">Export for the pediatrician</div><div class="d">Spreadsheet (CSV) of every entry</div></div><button class="chip" data-act="export-csv">CSV</button></div>
         <div class="set-row"><div><div class="t">Back up</div><div class="d">Save a copy you can restore later</div></div><button class="chip" data-act="export-json">Download</button></div>
         <div class="set-row"><div><div class="t">Restore</div><div class="d">Load a backup file</div></div><label class="chip" style="cursor:pointer">Choose file<input type="file" id="importFile" accept="application/json,.json" hidden></label></div>
-        <div class="set-row"><div><div class="t" style="color:var(--tomato)">Erase everything</div><div class="d">${state.entries.length} entries on this device</div></div><button class="chip" data-act="reset">Erase</button></div>
+        <div class="set-row"><div><div class="t" style="color:var(--red)">Erase everything</div><div class="d">${state.entries.length} entries on this device</div></div><button class="chip" data-act="reset">Erase</button></div>
       </div>
 
       <p class="small muted" style="margin:14px 4px 0">Tip: on iPhone tap Share → <b>Add to Home Screen</b> (Android: menu → Install app) to use My Little Pomodoro like a native app, even offline.</p>
@@ -675,6 +690,7 @@
   }
 
   function addEntry(e) {
+    if (navigator.vibrate) navigator.vibrate(12);
     e.id = e.id || uid();
     state.entries.push(e);
     save();
@@ -895,6 +911,15 @@
       toast('Entry deleted', () => { state.entries.push(e); save(); render(); });
       return;
     }
+    if (act === 'themes') { openThemes(); return; }
+    if (act === 'close-sheet') { closeSheet(); return; }
+    if (el.dataset.skinPick || el.dataset.mode) {
+      if (el.dataset.skinPick) state.settings.skin = el.dataset.skinPick;
+      if (el.dataset.mode) state.settings.theme = el.dataset.mode;
+      save(); applyTheme();
+      body.innerHTML = renderThemeSheet();
+      return;
+    }
     if (act === 'export-csv') { exportCSV(); return; }
     if (act === 'export-json') { download(`${state.baby.name}-pomodoro-backup-${toLocalInput(Date.now()).slice(0, 10)}.json`, JSON.stringify(state, null, 2), 'application/json'); return; }
     if (act === 'reset') {
@@ -969,10 +994,46 @@
 
   // ---------- Theme ----------
   function applyTheme() {
+    const root = document.documentElement;
     const t = state.settings.theme;
-    if (t === 'auto') document.documentElement.removeAttribute('data-theme');
-    else document.documentElement.setAttribute('data-theme', t);
+    if (t === 'auto') root.removeAttribute('data-theme');
+    else root.setAttribute('data-theme', t);
+    const skin = skinOf(state.settings.skin).id;
+    root.setAttribute('data-skin', skin);
+    if (window.loadSkinFonts) window.loadSkinFonts(skin);
+    // Match the phone's status bar to the app background
+    const meta = $('#themeColor');
+    if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--bg').trim() || '#F4F5F7');
   }
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => applyTheme());
+
+  function renderThemeSheet() {
+    const st = state.settings;
+    return `
+      <div class="skins">
+        ${SKINS.map((k) => `<button type="button" class="skin ${st.skin === k.id ? 'on' : ''}" data-skin="${k.id}" data-skin-pick="${k.id}" aria-pressed="${st.skin === k.id}">
+          <div class="skin-hero">
+            <svg aria-hidden="true"><rect width="100%" height="100%"/></svg>
+            ${st.skin === k.id ? '<span class="skin-check">✓</span>' : ''}
+            <div class="skin-name">${k.name}</div>
+          </div>
+          <div class="skin-meta">
+            <div class="skin-tag">${k.tag}</div>
+            <div class="skin-font">${k.font}</div>
+            <div class="skin-dots">${k.dots.map((c) => `<i style="background:${c}"></i>`).join('')}</div>
+          </div>
+        </button>`).join('')}
+      </div>
+      <div class="field" style="margin:20px 0 6px"><div class="label">Appearance</div>
+        <div class="seg">${[['auto', 'Auto'], ['light', 'Light'], ['dark', 'Dark']].map(([v, l]) => `<button type="button" data-mode="${v}" class="${st.theme === v ? 'on' : ''}">${l}</button>`).join('')}</div>
+      </div>
+      <button type="button" class="btn btn-primary btn-block" style="margin-top:12px" data-act="close-sheet">Done</button>`;
+  }
+  function openThemes() {
+    SKINS.forEach((k) => window.loadSkinFonts && window.loadSkinFonts(k.id)); // preview every font
+    openSheet('Make it yours', 'Themes', renderThemeSheet(), { kind: 'themes' });
+  }
+  $('#skinBtn').addEventListener('click', openThemes);
   $('#themeBtn').addEventListener('click', () => {
     const dark = document.documentElement.dataset.theme === 'dark' ||
       (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);

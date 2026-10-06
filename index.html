@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-skin="pomodoro">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>My Little Pomodoro</title>
   <meta name="description" content="A beautiful Italian-inspired newborn tracker for feeds, bottles, pee and poop.">
-  <meta name="theme-color" content="#F4F5F7" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0B0C0F" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Pomodoro">
@@ -15,7 +13,33 @@
   <link rel="apple-touch-icon" href="icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="theme-color" id="themeColor" content="#F4F5F7">
+  <script>
+    // Apply the saved theme before first paint (no flash), and load only that theme's fonts.
+    window.POMODORO_FONTS = {
+      pomodoro: 'family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700',
+      positano: 'family=Plus+Jakarta+Sans:wght@400;500;600;700;800',
+      limone: 'family=Sora:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700',
+      milano: 'family=Instrument+Serif:ital@0;1&family=Onest:wght@400;500;600;700',
+      toscana: 'family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700',
+      gelato: 'family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800'
+    };
+    window.loadSkinFonts = function (skin) {
+      if (!window.POMODORO_FONTS[skin] || document.getElementById('font-' + skin)) return;
+      var l = document.createElement('link');
+      l.rel = 'stylesheet'; l.id = 'font-' + skin;
+      l.href = 'https://fonts.googleapis.com/css2?' + window.POMODORO_FONTS[skin] + '&display=swap';
+      document.head.appendChild(l);
+    };
+    (function () {
+      var s = {};
+      try { s = (JSON.parse(localStorage.getItem('pomodoro.v1')) || {}).settings || {}; } catch (e) {}
+      var skin = s.skin || 'pomodoro';
+      document.documentElement.setAttribute('data-skin', skin);
+      if (s.theme === 'light' || s.theme === 'dark') document.documentElement.setAttribute('data-theme', s.theme);
+      window.loadSkinFonts(skin);
+    })();
+  </script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -54,12 +78,38 @@
       <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
       <symbol id="i-pause" viewBox="0 0 24 24"><rect x="7" y="5.5" width="3.4" height="13" rx="1" fill="currentColor"/><rect x="13.6" y="5.5" width="3.4" height="13" rx="1" fill="currentColor"/></symbol>
       <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
-      <pattern id="tile" width="44" height="44" patternUnits="userSpaceOnUse">
+      <pattern id="pat-pomodoro" width="44" height="44" patternUnits="userSpaceOnUse">
         <path d="M22 4l6 12 12 6-12 6-6 12-6-12-12-6 12-6z" fill="none" stroke="#fff" stroke-width="1.2"/>
         <circle cx="22" cy="22" r="3" fill="#fff"/>
         <circle cx="0" cy="0" r="5" fill="none" stroke="#fff" stroke-width="1.2"/><circle cx="44" cy="0" r="5" fill="none" stroke="#fff" stroke-width="1.2"/>
         <circle cx="0" cy="44" r="5" fill="none" stroke="#fff" stroke-width="1.2"/><circle cx="44" cy="44" r="5" fill="none" stroke="#fff" stroke-width="1.2"/>
       </pattern>
+      <pattern id="pat-positano" width="48" height="24" patternUnits="userSpaceOnUse">
+        <path d="M0 12c6-7 18-7 24 0s18 7 24 0" fill="none" stroke="#fff" stroke-width="1.6"/>
+        <path d="M0 22c6-5 18-5 24 0s18 5 24 0" fill="none" stroke="#fff" stroke-width="1"/>
+        <circle cx="24" cy="4" r="1.6" fill="#fff"/>
+      </pattern>
+      <pattern id="pat-limone" width="56" height="56" patternUnits="userSpaceOnUse" patternTransform="rotate(-18)">
+        <ellipse cx="18" cy="20" rx="8" ry="6" fill="#fff"/>
+        <path d="M25 17c4-5 10-5 12-2-4 3-8 4-12 2z" fill="#2F7A3E"/>
+        <ellipse cx="44" cy="46" rx="6" ry="4.5" fill="#fff"/>
+        <circle cx="6" cy="48" r="2" fill="#fff"/>
+      </pattern>
+      <pattern id="pat-milano" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="10" stroke="#D8B871" stroke-width="1"/>
+      </pattern>
+      <pattern id="pat-toscana" width="40" height="44" patternUnits="userSpaceOnUse">
+        <path d="M4 44V22a16 16 0 0 1 32 0v22" fill="none" stroke="#fff" stroke-width="1.5"/>
+        <path d="M12 44V24a8 8 0 0 1 16 0v20" fill="none" stroke="#fff" stroke-width="1"/>
+      </pattern>
+      <pattern id="pat-gelato" width="60" height="60" patternUnits="userSpaceOnUse">
+        <rect x="8" y="10" width="12" height="4" rx="2" fill="#E8457A" transform="rotate(30 14 12)"/>
+        <rect x="38" y="6" width="12" height="4" rx="2" fill="#6CC070" transform="rotate(-25 44 8)"/>
+        <rect x="24" y="30" width="12" height="4" rx="2" fill="#FFB020" transform="rotate(70 30 32)"/>
+        <rect x="46" y="42" width="12" height="4" rx="2" fill="#5AA7F5" transform="rotate(15 52 44)"/>
+        <rect x="6" y="46" width="12" height="4" rx="2" fill="#FFFFFF" transform="rotate(-40 12 48)"/>
+      </pattern>
+      <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 0 0 0 17c1.2 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-1 .8-1.7 1.7-1.7h2a4.5 4.5 0 0 0 4.5-4.5C21 6.7 17 3.5 12 3.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="7.6" cy="11.5" r="1.3" fill="currentColor"/><circle cx="10.4" cy="7.6" r="1.3" fill="currentColor"/><circle cx="15" cy="7.8" r="1.3" fill="currentColor"/></symbol>
     </defs>
   </svg>
 
@@ -72,9 +122,10 @@
           <div class="brand-sub" id="brandSub">Newborn tracker</div>
         </div>
       </div>
-      <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Light / Dark">
-        <svg><use href="#i-moon"/></svg>
-      </button>
+      <div class="top-actions">
+        <button class="icon-btn" id="skinBtn" aria-label="Choose theme" title="Themes"><svg><use href="#i-palette"/></svg></button>
+        <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Light / Dark"><svg><use href="#i-moon"/></svg></button>
+      </div>
     </header>
 
     <main id="view" class="view" tabindex="-1"></main>
