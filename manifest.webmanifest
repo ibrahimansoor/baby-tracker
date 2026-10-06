@@ -1,0 +1,13 @@
+{
+  "name": "My Little Pomodoro",
+  "short_name": "Pomodoro",
+  "description": "An Italian-inspired newborn tracker for feeds, bottles, pee and poop.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F6EFE3",
+  "theme_color": "#D2432F",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
