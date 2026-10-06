@@ -43,10 +43,10 @@
   // bottle: { ml, milk: 'formula'|'breastmilk' }
   // diaper: { pee: bool, poop: bool, color?, texture? }
   const TYPES = {
-    breast: { it: 'Allattamento', en: 'Breastfeed', icon: 'i-breast', cls: 't-breast' },
-    bottle: { it: 'Biberon', en: 'Formula / bottle', icon: 'i-bottle', cls: 't-bottle' },
-    pee:    { it: 'Pipì', en: 'Wet diaper', icon: 'i-drop', cls: 't-pee' },
-    poop:   { it: 'Cacca', en: 'Dirty diaper', icon: 'i-poop', cls: 't-poop' }
+    breast: { it: 'Breastfeed', en: 'Start timer', icon: 'i-breast', cls: 't-breast' },
+    bottle: { it: 'Formula', en: 'Bottle feed', icon: 'i-bottle', cls: 't-bottle' },
+    pee:    { it: 'Pee', en: 'Wet diaper', icon: 'i-drop', cls: 't-pee' },
+    poop:   { it: 'Poop', en: 'Dirty diaper', icon: 'i-poop', cls: 't-poop' }
   };
 
   const POOP_COLORS = [
@@ -94,11 +94,11 @@
   function dayLabel(t) {
     const today = startOfDay(Date.now());
     const d = startOfDay(t);
-    if (d === today) return { it: 'Oggi', en: 'Today' };
-    if (d === today - DAY) return { it: 'Ieri', en: 'Yesterday' };
+    if (d === today) return { it: 'Today', en: '' };
+    if (d === today - DAY) return { it: 'Yesterday', en: '' };
     const date = new Date(t);
     return {
-      it: date.toLocaleDateString('it-IT', { weekday: 'long' }).replace(/^./, (c) => c.toUpperCase()),
+      it: date.toLocaleDateString([], { weekday: 'long' }),
       en: date.toLocaleDateString([], { month: 'short', day: 'numeric' })
     };
   }
@@ -113,8 +113,8 @@
   function ageText() {
     const d = ageDays();
     if (d == null) return '';
-    if (d === 0) return 'Born today — benvenuto al mondo';
-    if (d < 14) return `${d} day${d === 1 ? '' : 's'} old · Giorno ${d + 1}`;
+    if (d === 0) return 'Born today — welcome to the world';
+    if (d < 14) return `${d} day${d === 1 ? '' : 's'} old · Day ${d + 1} of life`;
     if (d < 7 * 13) {
       const w = Math.floor(d / 7), r = d % 7;
       return `${w} weeks${r ? `, ${r} day${r === 1 ? '' : 's'}` : ''} old`;
@@ -202,7 +202,7 @@
   function render() {
     applyTheme();
     $('#tabbar').hidden = !state.baby;
-    $('#brandSub').textContent = state.baby ? `Diario di ${state.baby.name}` : 'Diario del bambino';
+    $('#brandSub').textContent = state.baby ? `${state.baby.name}'s daily log` : 'Newborn tracker';
     if (!state.baby) { view.innerHTML = renderWelcome(); bindWelcome(); return; }
     $$('#tabbar button').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab));
     if (tab === 'today') view.innerHTML = renderToday();
@@ -214,17 +214,17 @@
 
   function greeting() {
     const h = new Date().getHours();
-    if (h < 5) return 'Buonanotte';
-    if (h < 12) return 'Buongiorno';
-    if (h < 18) return 'Buon pomeriggio';
-    if (h < 22) return 'Buonasera';
-    return 'Buonanotte';
+    if (h < 5) return 'Good night';
+    if (h < 12) return 'Good morning';
+    if (h < 18) return 'Good afternoon';
+    if (h < 22) return 'Good evening';
+    return 'Good night';
   }
 
   function renderWelcome() {
     return `<section class="welcome">
       <svg class="big-tomato"><use href="#i-tomato"/></svg>
-      <div class="eyebrow">Benvenuti</div>
+      <div class="eyebrow">Welcome</div>
       <h1>My Little <em>Pomodoro</em></h1>
       <p class="tag">A calm, beautiful diary for every feed, bottle and diaper — made for the 3am moments.</p>
       <form class="card" id="welcomeForm">
@@ -236,7 +236,7 @@
           <label for="wBirth">Birthday</label>
           <input class="input" id="wBirth" type="date" required max="${toLocalInput(Date.now()).slice(0, 10)}">
         </div>
-        <button class="btn btn-primary btn-block" type="submit">Cominciamo · Let's begin</button>
+        <button class="btn btn-primary btn-block" type="submit">Let's begin</button>
         <p class="small muted" style="text-align:center;margin:12px 0 0">Your data stays private on this device.</p>
       </form>
     </section>`;
@@ -257,7 +257,7 @@
     if (!tm) return '';
     return `<div class="card live" id="liveCard">
       <div class="live-head">
-        <div class="eyebrow" style="color:var(--rosa)"><span class="live-dot"></span>${tm.side ? 'Nursing now' : 'Paused'}</div>
+        <div class="eyebrow" style="color:var(--pink)"><span class="live-dot"></span>${tm.side ? 'Nursing now' : 'Paused'}</div>
         <button class="chip" data-act="discard-timer">Discard</button>
       </div>
       <div class="live-total" data-timer-total>0:00</div>
@@ -304,9 +304,9 @@
 
     return `
       <section class="card hero">
-        <svg class="hero-deco"><use href="#i-tomato"/></svg>
+        <svg class="hero-tile" aria-hidden="true"><rect width="100%" height="100%" fill="url(#tile)"/></svg>
         <div class="eyebrow">${greeting()}</div>
-        <h1><em>${esc(state.baby.name)}</em></h1>
+        <h1>${esc(state.baby.name)}</h1>
         <div class="age">${ageText()}</div>
         <div class="since-grid">
           <div class="since">
@@ -325,7 +325,7 @@
 
       ${renderLiveTimer()}
 
-      <div class="section-title"><h2>Quick <em>log</em></h2></div>
+      <div class="section-title"><h2>Quick log</h2></div>
       <div class="actions">
         ${actionBtn('breast', state.timer ? 'running' : lastBreast && fmtAgo(lastBreast.t))}
         ${actionBtn('bottle', lastBottle && fmtAgo(lastBottle.t))}
@@ -333,22 +333,22 @@
         ${actionBtn('poop', lastPoop && fmtAgo(lastPoop.t))}
       </div>
 
-      <div class="section-title"><h2>Oggi <em>·</em> today</h2></div>
+      <div class="section-title"><h2>Today</h2></div>
       <div class="stats">
-        <div class="card stat">${ring(s.feeds, tg.feeds, 'var(--rosa)')}<div class="k">Feeds</div><div class="g">goal ${tg.feeds}–12</div></div>
-        <div class="card stat">${ring(s.wet, tg.wet, 'var(--limone)')}<div class="k">Wet</div><div class="g">expect ${tg.wet}+</div></div>
-        <div class="card stat">${ring(s.dirty, tg.dirty, 'var(--terracotta)')}<div class="k">Dirty</div><div class="g">expect ${tg.dirty}+</div></div>
+        <div class="card stat">${ring(s.feeds, tg.feeds, 'var(--pink)')}<div class="k">Feeds</div><div class="g">goal ${tg.feeds}–12</div></div>
+        <div class="card stat">${ring(s.wet, tg.wet, 'var(--lemon)')}<div class="k">Wet</div><div class="g">expect ${tg.wet}+</div></div>
+        <div class="card stat">${ring(s.dirty, tg.dirty, 'var(--espresso)')}<div class="k">Dirty</div><div class="g">expect ${tg.dirty}+</div></div>
       </div>
       <div class="mini-stats">
         <div class="card mini t-bottle"><span class="ico">${icon('i-bottle')}</span><div><div class="v">${state.settings.unit === 'oz' ? ozOf(s.bottleMl) : s.bottleMl}<small> ${state.settings.unit}</small></div><div class="l">${s.bottles} bottle${s.bottles === 1 ? '' : 's'}${s.formulaMl && s.formulaMl !== s.bottleMl ? ` · ${vol(s.formulaMl)} formula` : ''}</div></div></div>
         <div class="card mini t-breast"><span class="ico">${icon('i-breast')}</span><div><div class="v">${mins(s.breastSec)}<small> min</small></div><div class="l">${s.nursing} nursing session${s.nursing === 1 ? '' : 's'}</div></div></div>
       </div>
 
-      <div class="section-title"><h2>La <em>giornata</em></h2>${todayList.length ? '<button class="link" data-goto="diary">See diary →</button>' : ''}</div>
+      <div class="section-title"><h2>Timeline</h2>${todayList.length ? '<button class="link" data-goto="diary">See history →</button>' : ''}</div>
       ${todayList.length ? `<div class="timeline">${todayList.map(entryRow).join('')}</div>` : `
         <div class="empty">
           <svg><use href="#i-tomato"/></svg>
-          <p class="it">Una pagina bianca</p>
+          <p class="it">A fresh start</p>
           <p class="small">Tap a quick log above to record the first moment of the day.</p>
         </div>`}
       <p class="disclaimer" style="text-align:center">Goals are general newborn guidelines (day ${tg.dayOfLife} of life) — your pediatrician knows your baby best.</p>
@@ -357,7 +357,7 @@
   function actionBtn(type, lastTxt) {
     const T = TYPES[type];
     return `<button class="action ${T.cls}" data-log="${type}">
-      ${lastTxt ? `<span class="last" ${lastTxt !== 'running' ? '' : 'style="color:var(--rosa)"'}>${lastTxt === 'running' ? '● live' : lastTxt}</span>` : ''}
+      ${lastTxt ? `<span class="last" ${lastTxt !== 'running' ? '' : 'style="color:var(--pink)"'}>${lastTxt === 'running' ? '● live' : lastTxt}</span>` : ''}
       <span class="ico">${icon(T.icon)}</span>
       <span><div class="it">${T.it}</div><div class="en">${T.en}</div></span>
     </button>`;
@@ -373,16 +373,16 @@
     const max = Math.max(8, ...days.map((x) => x.s.feeds + x.s.wet + x.s.dirty));
     const h = (n) => `${(n / max) * 100}%`;
     return `<div class="card week">
-      <div class="week-head"><h3>La settimana</h3>
-        <div class="legend"><span><i style="background:var(--rosa)"></i>Feeds</span><span><i style="background:var(--limone)"></i>Wet</span><span><i style="background:var(--terracotta)"></i>Dirty</span></div>
+      <div class="week-head"><h3>This week</h3>
+        <div class="legend"><span><i style="background:var(--pink)"></i>Feeds</span><span><i style="background:var(--lemon)"></i>Wet</span><span><i style="background:var(--espresso)"></i>Dirty</span></div>
       </div>
       <div class="bars">
         ${days.map(({ d, s }) => `<div class="bar-col">
           <div class="n">${s.feeds || ''}</div>
           <div class="bar-stack">
-            <div style="height:${h(s.feeds)};background:var(--rosa)"></div>
-            <div style="height:${h(s.wet)};background:var(--limone)"></div>
-            <div style="height:${h(s.dirty)};background:var(--terracotta)"></div>
+            <div style="height:${h(s.feeds)};background:var(--pink)"></div>
+            <div style="height:${h(s.wet)};background:var(--lemon)"></div>
+            <div style="height:${h(s.dirty)};background:var(--espresso)"></div>
           </div>
           <div class="d ${d === today ? 'today' : ''}">${new Date(d).toLocaleDateString([], { weekday: 'narrow' })}</div>
         </div>`).join('')}
@@ -391,7 +391,7 @@
   }
 
   function renderDiary() {
-    const filters = [['all', 'Tutto · All'], ['feeds', 'Feeds'], ['diapers', 'Diapers'], ['poop', 'Poop only']];
+    const filters = [['all', 'All'], ['feeds', 'Feeds'], ['diapers', 'Diapers'], ['poop', 'Poop only']];
     const pred = {
       all: () => true,
       feeds: isFeed,
@@ -407,7 +407,7 @@
       g.items.push(e);
     });
     return `
-      <div class="section-title" style="margin-top:4px"><h2>Il <em>diario</em></h2></div>
+      <div class="section-title" style="margin-top:4px"><h2>History</h2></div>
       ${renderWeek()}
       <div class="chips" style="margin-top:18px">
         ${filters.map(([k, l]) => `<button class="chip ${diaryFilter === k ? 'on' : ''}" data-filter="${k}">${l}</button>`).join('')}
@@ -415,10 +415,10 @@
       ${groups.length ? groups.map((g) => {
         const lbl = dayLabel(g.d);
         const s = summarize(entriesOn(g.d));
-        return `<div class="day-head"><h3>${lbl.it} <em>${lbl.en}</em></h3>
+        return `<div class="day-head"><h3>${lbl.it}${lbl.en ? ` <em>${lbl.en}</em>` : ''}</h3>
           <div class="sum">${s.feeds} feeds · ${vol(s.bottleMl)} · ${mins(s.breastSec)}m nursing<br>${s.wet} wet · ${s.dirty} dirty</div></div>
           <div class="timeline">${g.items.map(entryRow).join('')}</div>`;
-      }).join('') : `<div class="empty" style="margin-top:18px"><svg><use href="#i-tomato"/></svg><p class="it">Niente ancora</p><p class="small">Entries you log will appear here, grouped by day.</p></div>`}
+      }).join('') : `<div class="empty" style="margin-top:18px"><svg><use href="#i-tomato"/></svg><p class="it">Nothing yet</p><p class="small">Entries you log will appear here, grouped by day.</p></div>`}
     `;
   }
 
@@ -443,8 +443,8 @@
     const fNow = (i) => d != null && [d <= 2, d >= 3 && d <= 6, d >= 7 && d <= 29, d >= 30 && d <= 60, d > 60 && d <= 120][i];
     return `
       <section class="guide-intro">
-        <div class="eyebrow">La guida</div>
-        <h1>What's <em>normal</em>, day by day</h1>
+        <div class="eyebrow">Parent guide</div>
+        <h1>What's normal, day by day</h1>
         <p>Gentle, evidence-based reference for the first months. Highlighted rows match ${esc(state.baby.name)}'s age today.</p>
       </section>
 
@@ -503,7 +503,7 @@
       </div>
 
       <div class="card gcard">
-        <h3><span class="ico" style="--s:var(--basilico-soft);--c:var(--basilico)">${icon('i-moon')}</span>Safe sleep — the ABCs</h3>
+        <h3><span class="ico" style="--s:var(--basil-soft);--c:var(--basil)">${icon('i-moon')}</span>Safe sleep — the ABCs</h3>
         <ul>
           <li><b>Alone</b> — no pillows, blankets, bumpers or toys.</li>
           <li><b>Back</b> — always on their back, for every sleep.</li>
@@ -525,7 +525,7 @@
       </div>
 
       <div class="card gcard">
-        <h3><span class="ico" style="--s:var(--pomodoro-soft);--c:var(--pomodoro)">${icon('i-breast')}</span>E anche tu — care for you</h3>
+        <h3><span class="ico" style="--s:var(--tomato-soft);--c:var(--tomato)">${icon('i-breast')}</span>Care for you, too</h3>
         <ul>
           <li>Sleep when you can, eat and drink water at every feed, and say yes to help.</li>
           <li>Baby blues are common for ~2 weeks. Sadness, anxiety or scary thoughts lasting longer deserve support — you're not alone.</li>
@@ -545,9 +545,9 @@
     const st = state.settings;
     const seg = (key, opts) => `<div class="seg" data-setting="${key}">${opts.map(([v, l]) => `<button type="button" data-v="${v}" class="${st[key] === v ? 'on' : ''}">${l}</button>`).join('')}</div>`;
     return `
-      <div class="section-title" style="margin-top:4px"><h2>Le <em>impostazioni</em></h2></div>
+      <div class="section-title" style="margin-top:4px"><h2>Settings</h2></div>
       <form class="card" id="babyForm">
-        <div class="eyebrow" style="margin-bottom:12px">Il bambino</div>
+        <div class="eyebrow" style="margin-bottom:12px">Baby profile</div>
         <div class="row">
           <div class="field"><label for="sName">Name</label><input class="input" id="sName" value="${esc(state.baby.name)}" required></div>
           <div class="field"><label for="sBirth">Birthday</label><input class="input" id="sBirth" type="date" value="${esc(state.baby.birth)}" required></div>
@@ -556,7 +556,7 @@
       </form>
 
       <div class="card set-list" style="margin-top:14px;padding:0">
-        <div class="set-row"><div><div class="t">Appearance</div><div class="d">Notte mode is easy on tired eyes</div></div>${seg('theme', [['auto', 'Auto'], ['light', 'Giorno'], ['dark', 'Notte']])}</div>
+        <div class="set-row"><div><div class="t">Appearance</div><div class="d">Dark mode is easy on tired eyes</div></div>${seg('theme', [['auto', 'Auto'], ['light', 'Light'], ['dark', 'Dark']])}</div>
         <div class="set-row"><div><div class="t">Volume unit</div><div class="d">For bottles &amp; formula</div></div>${seg('unit', [['ml', 'ml'], ['oz', 'oz']])}</div>
       </div>
 
@@ -564,11 +564,11 @@
         <div class="set-row"><div><div class="t">Export for the pediatrician</div><div class="d">Spreadsheet (CSV) of every entry</div></div><button class="chip" data-act="export-csv">CSV</button></div>
         <div class="set-row"><div><div class="t">Back up</div><div class="d">Save a copy you can restore later</div></div><button class="chip" data-act="export-json">Download</button></div>
         <div class="set-row"><div><div class="t">Restore</div><div class="d">Load a backup file</div></div><label class="chip" style="cursor:pointer">Choose file<input type="file" id="importFile" accept="application/json,.json" hidden></label></div>
-        <div class="set-row"><div><div class="t" style="color:var(--pomodoro)">Erase everything</div><div class="d">${state.entries.length} entries on this device</div></div><button class="chip" data-act="reset">Erase</button></div>
+        <div class="set-row"><div><div class="t" style="color:var(--tomato)">Erase everything</div><div class="d">${state.entries.length} entries on this device</div></div><button class="chip" data-act="reset">Erase</button></div>
       </div>
 
       <p class="small muted" style="margin:14px 4px 0">Tip: on iPhone tap Share → <b>Add to Home Screen</b> (Android: menu → Install app) to use My Little Pomodoro like a native app, even offline.</p>
-      <p class="footer-note">Fatto con amore · made with love, one feed at a time.</p>
+      <p class="footer-note">Made with love, one feed at a time.</p>
     `;
   }
   function bindSettings() {
@@ -735,8 +735,8 @@
     const html = `<form id="logForm">
       <div class="field"><div class="label">What's in the diaper?</div>
         <div class="toggles">
-          <button type="button" class="toggle t-pee ${e.pee ? 'on' : ''}" data-toggle="pee"><span class="ico">${icon('i-drop')}</span>Pipì<span class="chk">✓</span></button>
-          <button type="button" class="toggle t-poop ${e.poop ? 'on' : ''}" data-toggle="poop"><span class="ico">${icon('i-poop')}</span>Cacca<span class="chk">✓</span></button>
+          <button type="button" class="toggle t-pee ${e.pee ? 'on' : ''}" data-toggle="pee"><span class="ico">${icon('i-drop')}</span>Pee<span class="chk">✓</span></button>
+          <button type="button" class="toggle t-poop ${e.poop ? 'on' : ''}" data-toggle="poop"><span class="ico">${icon('i-poop')}</span>Poop<span class="chk">✓</span></button>
         </div>
       </div>
       <div id="poopDetails" ${e.poop ? '' : 'hidden'}>
@@ -752,7 +752,7 @@
       ${noteField(e.note)}
       ${actionsRow(editing)}
     </form>`;
-    const title = e.poop && !e.pee ? 'Cacca' : e.pee && !e.poop ? 'Pipì' : 'Pannolino';
+    const title = e.poop && !e.pee ? 'Poop' : e.pee && !e.poop ? 'Pee' : 'Diaper';
     openSheet(editing ? 'Edit diaper' : 'New diaper', title, html, { kind: 'diaper', entry: editing ? e : null, pee: !!e.pee, poop: !!e.poop, color: e.color || null, texture: e.texture || null });
     updateColorWarn();
   }
@@ -787,7 +787,7 @@
       ${noteField(e.note)}
       ${actionsRow(editing)}
     </form>`;
-    openSheet(editing ? 'Edit bottle' : 'New bottle', 'Biberon', html, { kind: 'bottle', entry: editing ? e : null, milk, step: oz ? 0.5 : 10 });
+    openSheet(editing ? 'Edit bottle' : 'New bottle', 'Formula', html, { kind: 'bottle', entry: editing ? e : null, milk, step: oz ? 0.5 : 10 });
   }
 
   function openBreast(e, editing) {
@@ -797,7 +797,7 @@
       const tm = state.timer;
       const html = `
         <div class="card live" style="margin-top:0">
-          <div class="live-head"><div class="eyebrow" style="color:var(--rosa)">${tm ? `<span class="live-dot"></span>${tm.side ? 'Nursing now' : 'Paused'}` : 'Timer'}</div>
+          <div class="live-head"><div class="eyebrow" style="color:var(--pink)">${tm ? `<span class="live-dot"></span>${tm.side ? 'Nursing now' : 'Paused'}` : 'Timer'}</div>
           ${tm ? '<button class="chip" data-act="discard-timer">Discard</button>' : `<span class="small muted">Suggested: ${sideName(suggest)}</span>`}</div>
           <div class="live-total" data-timer-total>${fmtClock(0)}</div>
           ${sideButtons()}
@@ -805,10 +805,10 @@
         </div>
         <div class="or">or log it manually</div>
         ${manualBreastForm({}, false)}`;
-      openSheet('Nursing', 'Allattamento', html, { kind: 'breast', entry: null });
+      openSheet('Nursing', 'Breastfeed', html, { kind: 'breast', entry: null });
       return;
     }
-    openSheet('Edit nursing', 'Allattamento', manualBreastForm(e, true), { kind: 'breast', entry: e });
+    openSheet('Edit nursing', 'Breastfeed', manualBreastForm(e, true), { kind: 'breast', entry: e });
   }
   function manualBreastForm(e, editing) {
     return `<form id="logForm">
@@ -832,7 +832,7 @@
     const note = $('#fNote').value.trim();
     let data;
     if (ctx.kind === 'diaper') {
-      if (!ctx.pee && !ctx.poop) { toast('Choose pipì, cacca or both'); return; }
+      if (!ctx.pee && !ctx.poop) { toast('Choose pee, poop or both'); return; }
       data = { type: 'diaper', t, pee: ctx.pee, poop: ctx.poop, color: ctx.poop ? ctx.color : null, texture: ctx.poop ? ctx.texture : null, note };
     } else if (ctx.kind === 'bottle') {
       let v = parseFloat($('#fMl').value) || 0;
@@ -916,7 +916,7 @@
       sheetCtx[k] = !sheetCtx[k];
       el.classList.toggle('on', sheetCtx[k]);
       $('#poopDetails').hidden = !sheetCtx.poop;
-      $('#sheetTitle').textContent = sheetCtx.poop && !sheetCtx.pee ? 'Cacca' : sheetCtx.pee && !sheetCtx.poop ? 'Pipì' : 'Pannolino';
+      $('#sheetTitle').textContent = sheetCtx.poop && !sheetCtx.pee ? 'Poop' : sheetCtx.pee && !sheetCtx.poop ? 'Pee' : 'Diaper';
       return;
     }
     if (el.dataset.color) {
