@@ -34,7 +34,9 @@
   --shadow-md: 0 1px 2px rgba(16, 17, 21, .04), 0 10px 30px -10px rgba(16, 17, 21, .14);
   --radius-sm: 16px;
   --tab-h: 72px;
+  --gutter: 16px;
 }
+@media (max-width: 380px) { :root { --gutter: 12px; } }
 
 /* ---------- Skins ---------- */
 /* 1. Pomodoro — tomato & Aperol sunset */
@@ -209,14 +211,16 @@ svg { width: 1em; height: 1em; }
 .app {
   max-width: 560px;
   margin: 0 auto;
-  padding: 0 16px calc(var(--tab-h) + 36px + env(safe-area-inset-bottom));
+  padding: 0 var(--gutter) calc(var(--tab-h) + 36px + env(safe-area-inset-bottom));
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
 }
 
 /* ---------- Top bar ---------- */
 .topbar {
   position: sticky; top: 0; z-index: 15;
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  margin: 0 -16px; padding: calc(10px + env(safe-area-inset-top)) 16px 12px;
+  margin: 0 calc(-1 * var(--gutter)); padding: calc(10px + env(safe-area-inset-top)) var(--gutter) 12px;
   background: color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
 }
@@ -582,8 +586,6 @@ textarea.input { resize: vertical; min-height: 64px; }
 .footer-note { text-align: center; color: var(--muted); margin: 30px 0 0; font-size: 13.5px; font-weight: 500; }
 
 @media (max-width: 380px) {
-  .app { padding-left: 12px; padding-right: 12px; }
-  .topbar { margin: 0 -12px; padding-left: 12px; padding-right: 12px; }
   .hero h1 { font-size: 32px; }
   .stats { gap: 8px; }
   .action { min-height: 118px; padding: 14px; }
@@ -642,7 +644,7 @@ body.sheet-open { overflow: hidden; }
 .btn-red { background: var(--red); color: #fff; }
 .btn-violet { background: var(--violet); box-shadow: 0 12px 24px -12px var(--violet); color: #fff; }
 .link-btn { display: block; margin: 14px auto 0; background: none; border: 0; color: var(--accent); font-weight: 600; font-size: 14px; padding: 6px; }
-.chips.scroll-x { flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px; padding: 2px 16px; scrollbar-width: none; }
+.chips.scroll-x { flex-wrap: nowrap; overflow-x: auto; margin: 0 calc(-1 * var(--gutter)); padding: 2px var(--gutter); scrollbar-width: none; scroll-padding: 0 var(--gutter); }
 .chips.scroll-x::-webkit-scrollbar { display: none; }
 .chips.scroll-x .chip { flex: none; }
 .chip svg { font-size: 15px; vertical-align: -3px; margin-right: 2px; }
@@ -682,7 +684,7 @@ body.sheet-open { overflow: hidden; }
 .t-sleep.live { border-color: color-mix(in srgb, var(--violet) 35%, var(--line)); }
 
 /* Secondary log chips */
-.more-log { display: flex; gap: 8px; overflow-x: auto; margin: 12px -16px 0; padding: 2px 16px 4px; scrollbar-width: none; }
+.more-log { display: flex; gap: 8px; overflow-x: auto; margin: 12px calc(-1 * var(--gutter)) 0; padding: 2px var(--gutter) 4px; scrollbar-width: none; overscroll-behavior-x: contain; }
 .more-log::-webkit-scrollbar { display: none; }
 .more-chip { flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 7px; border-radius: 99px;
   border: 1px solid var(--line); background: var(--surface); font-weight: 700; font-size: 13.5px; }
@@ -823,3 +825,64 @@ body.sheet-open { overflow: hidden; }
 .brand > div { min-width: 0; }
 .brand-name, .brand-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .top-actions { flex: none; align-items: center; }
+
+/* ==========================================================
+   Mobile polish — no sideways drift, stable sheets, iOS form fixes
+   ========================================================== */
+/* Nothing may ever widen the page sideways (clip keeps position: sticky working) */
+html, body { overflow-x: clip; max-width: 100%; }
+html { touch-action: manipulation; }           /* no double-tap zoom delay */
+img, svg, video { max-width: 100%; }
+.view, .card, .field, .row > * { min-width: 0; }
+
+/* Body scroll lock while a sheet is open (JS pins the page at its scroll position) */
+body.sheet-open { overflow: hidden; position: fixed; left: 0; right: 0; width: 100%; }
+
+/* iOS Safari: date/time inputs ignore width:100% and overflow their card */
+input[type="date"], input[type="datetime-local"], input[type="time"] {
+  -webkit-appearance: none; appearance: none;
+  display: block; width: 100%; min-width: 0; max-width: 100%;
+  min-height: 50px; line-height: 1.25; text-align: left; background-clip: padding-box;
+}
+input::-webkit-date-and-time-value { text-align: left; margin: 0; min-height: 1.25em; }
+input::-webkit-datetime-edit { padding: 0; }
+input::-webkit-calendar-picker-indicator { opacity: .6; }
+
+/* Native selects get the same look as inputs, with a chevron */
+select.input {
+  -webkit-appearance: none; appearance: none; padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 16px center;
+}
+.input { min-height: 50px; }
+textarea.input { min-height: 84px; }
+
+/* Touch: no sticky hover states, no text selection or long-press callouts on controls */
+button, .chip, .action, .entry, .tabbar button, label.chip, .skin, .ph {
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+}
+@media (hover: none) {
+  .action:hover, .entry:hover, .btn-primary:hover { filter: none; box-shadow: none; }
+}
+:focus { outline: none; }
+:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 2px; border-radius: 12px; }
+.input:focus-visible { outline: none; }
+
+/* Tap targets ≥ 44px */
+.icon-btn { width: 44px; height: 44px; }
+.chip { min-height: 36px; display: inline-flex; align-items: center; }
+.time-chips .chip { min-height: 34px; }
+.link, .link-btn, .back-link { min-height: 44px; display: inline-flex; align-items: center; }
+.section-title { min-height: 44px; }
+
+/* Sheet: smooth momentum scroll, no rubber-band leaking to the page */
+.sheet { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y; }
+.sheet-body { padding-bottom: 8px; }
+.scrim { touch-action: none; }
+
+/* Toasts wrap instead of running off narrow screens */
+.toast { white-space: normal; max-width: calc(100% - 2 * var(--gutter)); width: max-content; text-align: left; }
+
+/* Long names never push layouts wider */
+.hero-id h1, .lr-main b, .entry .title, .brand-name { overflow-wrap: anywhere; }
+.entry .title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }

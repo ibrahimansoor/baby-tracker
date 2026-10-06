@@ -12,6 +12,20 @@ export function runAction(name, el, ev) {
 }
 
 // ---------- Sheet ----------
+// Pin the page where it is while a sheet is open (iOS ignores overflow:hidden on body),
+// then put it back exactly — so opening Breastfeed etc. never makes the screen jump.
+let lockedY = 0;
+function lockScroll() {
+  lockedY = window.scrollY;
+  document.body.style.top = `-${lockedY}px`;
+  document.body.classList.add('sheet-open');
+}
+function unlockScroll() {
+  if (!document.body.classList.contains('sheet-open')) return;
+  document.body.classList.remove('sheet-open');
+  document.body.style.top = '';
+  window.scrollTo(0, lockedY);
+}
 let sheetCtx = null;
 let onClose = null;
 export const sheetOpen = () => !$('#sheet').hidden;
@@ -25,8 +39,8 @@ export function openSheet({ eyebrow = '', title = '', html = '', context = null,
   $('#sheetBody').innerHTML = html;
   const sheet = $('#sheet');
   sheet.classList.toggle('wide', wide);
+  if (sheet.hidden) lockScroll();
   sheet.hidden = false; $('#scrim').hidden = false;
-  document.body.classList.add('sheet-open');
   sheet.scrollTop = 0;
 }
 export function setSheetBody(html) { $('#sheetBody').innerHTML = html; }
@@ -35,7 +49,7 @@ export function closeSheet() {
   if (!sheetOpen()) return;
   $('#sheet').hidden = true; $('#scrim').hidden = true;
   $('#sheetBody').innerHTML = '';
-  document.body.classList.remove('sheet-open');
+  unlockScroll();
   sheetCtx = null;
   const cb = onClose; onClose = null;
   if (cb) cb();
