@@ -264,6 +264,8 @@ async function doPull() {
   const fid = store.familyId;
   if (!fid) return;
   const pendingIds = new Set((await idb.all('outbox')).map((o) => o.id));
+  const wasOnline = store.online;
+  let changed = false;
   let cursor = await idb.get('kv', `cursor:${fid}`);
   for (let guard = 0; guard < 50; guard++) {
     const res = await api.get(`/families/${fid}/sync${cursor ? `?since=${encodeURIComponent(cursor)}` : ''}`);
@@ -277,6 +279,8 @@ async function doPull() {
     entriesIn.forEach((e) => store.entries.set(e.id, e));
     await idb.putMany('babies', babiesIn);
     await idb.putMany('entries', entriesIn);
+    if (JSON.stringify(res.members) !== JSON.stringify(store.members) || res.role !== store.role) changed = true;
+    if (babiesIn.length || entriesIn.length) changed = true;
     store.members = res.members;
     store.role = res.role;
     const f = family(); if (f) f.role = res.role;
@@ -289,7 +293,8 @@ async function doPull() {
   }
   store.online = true;
   store.lastSync = Date.now();
-  emit();
+  // Only redraw when something actually changed — quiet syncs shouldn't touch the screen
+  if (changed || !wasOnline) emit();
 }
 
 export async function sync() {
