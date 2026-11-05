@@ -6,6 +6,8 @@ import { prefs, setPref } from '../prefs.js';
 import { registerActions, openSheet, closeSheet, toast, confirmBox, avatar, segmented, segValue, emptyState } from '../ui.js';
 import { ROLE_LABEL, ROLE_HINT, RELATIONSHIPS } from './auth.js';
 import { babyAvatarUrl } from './today.js';
+import { remindersMeRow } from './timers.js';
+import { timers } from '../store.js';
 
 const fam = { members: [], invites: [], loadedFor: null, loading: false };
 const rerender = () => window.dispatchEvent(new Event('pomo:render'));
@@ -25,7 +27,8 @@ const pushSupported = () => 'serviceWorker' in navigator && 'PushManager' in win
 const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 let pushState = 'unknown';
-async function refreshPushState() {
+export const getPushState = () => pushState;
+export async function refreshPushState() {
   if (!pushSupported()) { pushState = isIOS() && !isStandalone() ? 'ios-install' : 'unsupported'; return; }
   if (Notification.permission === 'denied') { pushState = 'denied'; return; }
   const reg = await navigator.serviceWorker.getRegistration();
@@ -57,8 +60,8 @@ async function disablePush() {
 
 function pushRow() {
   const states = {
-    on: ['Reminders are on', 'Birthdays, monthly milestones & checkups', '<button class="chip" data-act="push-off">Turn off</button>'],
-    off: ['Birthday & checkup reminders', 'Get a notification on this phone', '<button class="chip on" data-act="push-on">Turn on</button>'],
+    on: ['Notifications are on', 'Timers, birthdays, monthly milestones & checkups', '<button class="chip" data-act="push-off">Turn off</button>'],
+    off: ['Notifications on this phone', 'Timer alerts, birthdays & checkups — even when the app is closed', '<button class="chip on" data-act="push-on">Turn on</button>'],
     denied: ['Notifications are blocked', 'Allow them for this site in your phone settings', ''],
     'ios-install': ['Reminders on iPhone', 'First tap Share → Add to Home Screen, then open the app from your home screen', ''],
     unsupported: ['Reminders not available', 'This browser can’t receive notifications — use the calendar option below', ''],
@@ -119,6 +122,8 @@ export function renderMore() {
     <div class="section-title"><h2>Reminders</h2></div>
     <div class="card set-list">
       ${pushRow()}
+      ${remindersMeRow()}
+      <div class="set-row"><div><div class="t">${icon('i-bell')} Care timers</div><div class="d">${timers().length ? `${timers().filter((x) => x.data.enabled !== false).length} on for ${esc(baby() ? baby().name : 'baby')} · shown on Today` : 'Feed, diaper, pump, medicine & nap reminders'}</div></div>${edit ? '<button class="chip" data-act="timer-new">Add</button>' : ''}</div>
       <div class="set-row"><div><div class="t">${icon('i-calendar')} Birthday in my calendar</div><div class="d">Adds a yearly event — syncs with iCloud or Google Calendar</div></div><button class="chip" data-act="birthday-ics">Add</button></div>
       ${pushState === 'on' ? '<div class="set-row"><div><div class="t">Send a test</div><div class="d">Check notifications reach this phone</div></div><button class="chip" data-act="push-test">Test</button></div>' : ''}
     </div>
@@ -245,7 +250,7 @@ function csv() {
   const q = (v) => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`;
   const names = new Map(babies().map((b) => [b.id, b.name]));
   const rows = [['Baby', 'Date', 'Time', 'Type', 'Details', 'Note']];
-  [...store.entries.values()].filter((e) => !e.deleted && !(e.data && e.data.running)).sort((a, b) => a.t - b.t).forEach((e) => {
+  [...store.entries.values()].filter((e) => !e.deleted && e.type !== 'timer' && !(e.data && e.data.running)).sort((a, b) => a.t - b.t).forEach((e) => {
     const d = new Date(e.t); const data = { ...e.data }; const note = data.note || ''; delete data.note;
     rows.push([names.get(e.babyId) || '', d.toLocaleDateString(), d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }), e.type,
       Object.entries(data).filter(([, v]) => v !== null && v !== '' && v !== undefined).map(([k, v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`).join('; '), note]);

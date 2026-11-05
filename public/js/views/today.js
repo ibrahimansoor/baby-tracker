@@ -3,6 +3,7 @@ import { esc, icon, fmtAgo, fmtTime, fmtDate, startOfDay, ageText, ageDays, cele
 import { store, baby, babies, entries, canEdit, photoUrl, setBaby } from '../store.js';
 import { vol, prefs } from '../prefs.js';
 import { avatar, registerActions, emptyState } from '../ui.js';
+import { renderTimerSection } from './timers.js';
 import { TYPES, entryRow, entryView, runningBreast, runningSleep, breastTimerCard, sleepTimerCard, lastBreastSide, otherSide, sideName, isFeed, hasPee, hasPoop } from './log.js';
 
 export function babyAvatarUrl(b) {
@@ -120,6 +121,8 @@ export function renderToday() {
       <div><div class="small muted">Next checkup</div><b>${fmtDate(appt.at, { weekday: 'short', month: 'short', day: 'numeric' })} · ${fmtTime(appt.at)}</b>${appt.e.data.doctor ? `<div class="small muted">${esc(appt.e.data.doctor)}</div>` : ''}</div>
       <button class="chip" data-act="appt-ics" data-id="${appt.e.id}">${icon('i-calendar')} Add</button>
     </div>` : ''}
+
+    ${renderTimerSection()}
 
     ${rb ? `<div class="live-wrap">${breastTimerCard(true)}</div>` : ''}
     ${rs ? `<div class="live-wrap">${sleepTimerCard(true)}</div>` : ''}

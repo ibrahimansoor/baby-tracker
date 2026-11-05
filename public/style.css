@@ -897,3 +897,71 @@ button, .chip, .action, .entry, .tabbar button, label.chip, .skin, .ph {
 :root[data-theme="dark"] .logo-plate { background: #FFFFFF; border-radius: 32px; padding: 18px 22px 14px; box-shadow: 0 18px 40px -18px rgba(0,0,0,.6); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .logo-plate { background: #FFFFFF; border-radius: 32px; padding: 18px 22px 14px; box-shadow: 0 18px 40px -18px rgba(0,0,0,.6); } }
 .empty .empty-mark { width: 56px; height: auto; opacity: .9; }
+
+/* ==========================================================
+   Care timers — countdown cards, alert banner, setup sheet
+   ========================================================== */
+.timer-promo {
+  display: flex; gap: 14px; align-items: flex-start; margin-top: 14px; padding: 16px;
+  border-radius: var(--radius); background: var(--surface); border: 1px dashed color-mix(in srgb, var(--accent) 45%, var(--line));
+}
+.timer-promo .tp-ico { width: 44px; height: 44px; border-radius: 14px; flex: none; display: grid; place-items: center; font-size: 22px; background: var(--accent-soft); color: var(--accent); }
+.timer-promo .tp-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.timer-promo .btn-row { margin-top: 10px; flex-wrap: wrap; }
+.timer-promo .btn-row .btn { flex: 1 1 auto; }
+
+.timer-list { display: flex; flex-direction: column; gap: 8px; }
+.timer-card {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  padding: 12px 14px; border-radius: 18px; background: var(--surface); border: 1.5px solid var(--line);
+  transition: border-color .2s, background .2s, transform .12s;
+}
+.timer-card:active { transform: scale(.985); }
+.timer-card .ico { width: 42px; height: 42px; border-radius: 14px; flex: none; display: grid; place-items: center; font-size: 21px; background: var(--s); color: var(--c); }
+.tc-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.tc-main b { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-sub { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-bar { display: block; height: 5px; border-radius: 99px; background: var(--surface-2); overflow: hidden; margin-top: 5px; }
+.tc-bar i { display: block; height: 100%; border-radius: 99px; background: var(--c); transition: width 1s linear; }
+.tc-time { flex: none; font-family: var(--display); font-weight: var(--dw); font-size: 15px; font-variant-numeric: tabular-nums; color: var(--text); text-align: right; white-space: nowrap; }
+.tc-time.off { color: var(--muted-2); font-family: var(--sans); font-weight: 600; font-size: 13px; }
+.timer-card.is-due { border-color: var(--red); background: var(--red-soft); }
+.timer-card.is-due .tc-time { color: var(--red); }
+.timer-card.is-due .ico { background: var(--red); color: #fff; animation: ring 1.6s ease-in-out infinite; }
+.timer-card.is-due .tc-bar i { background: var(--red); }
+.timer-card.is-active .tc-time { color: var(--accent); }
+.timer-card.is-off { opacity: .6; }
+@keyframes ring { 0%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(-10deg); } 20%, 40% { transform: rotate(10deg); } 50% { transform: rotate(0); } }
+
+/* In-app alert banner (top of screen) */
+.timer-alert { position: fixed; left: 0; right: 0; top: calc(8px + env(safe-area-inset-top)); z-index: 65; padding: 0 var(--gutter); pointer-events: none; }
+.timer-alert[hidden] { display: none; }
+.ta-card {
+  max-width: 528px; margin: 0 auto; pointer-events: auto;
+  display: grid; grid-template-columns: auto 1fr; gap: 10px 12px; align-items: center;
+  padding: 14px; border-radius: 22px; background: var(--surface); border: 1.5px solid var(--red);
+  box-shadow: 0 18px 44px -14px rgba(0, 0, 0, .45);
+}
+.timer-alert.show .ta-card { animation: drop .35s cubic-bezier(.2, .9, .3, 1.15); }
+@keyframes drop { from { transform: translateY(-120%); opacity: 0; } }
+.ta-card .ico { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; background: var(--red); color: #fff; animation: ring 1.6s ease-in-out 2; }
+.ta-copy { display: flex; flex-direction: column; min-width: 0; }
+.ta-copy b { font-size: 16px; }
+.ta-copy span { font-size: 13.5px; color: var(--muted); }
+.ta-actions { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
+.ta-actions .btn { flex: 1 1 auto; }
+
+/* Setup sheet */
+.kind-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.kind {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 4px;
+  border-radius: 16px; border: 1.5px solid var(--line); background: var(--surface); font-size: 12px; font-weight: 700; text-align: center;
+}
+.kind .ico { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; font-size: 18px; background: var(--s); color: var(--c); }
+.kind.on { border-color: var(--c); background: var(--s); }
+.kind.on .ico { background: var(--c); color: #fff; }
+.dur-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.timer-due-actions { padding: 14px; border-radius: 18px; background: var(--red-soft); margin-bottom: 18px; }
+.timer-due-actions b { color: var(--red); }
+.timer-due-actions .btn-row { margin-top: 10px; }
+@media (max-width: 360px) { .kind-grid { grid-template-columns: repeat(3, 1fr); } }

@@ -15,7 +15,7 @@ const bigJson = express.json({ limit: '15mb' });
 const ROLES = ['owner', 'editor', 'viewer'];
 const ENTRY_TYPES = new Set([
   'breast', 'bottle', 'diaper', 'sleep', 'pump', 'solid', 'med', 'temp',
-  'growth', 'vaccine', 'milestone', 'photo', 'note'
+  'growth', 'vaccine', 'milestone', 'photo', 'note', 'timer'
 ]);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -220,7 +220,7 @@ router.patch('/families/:fid', requireUser, familyAccess('owner'), json, wrap(as
 
 router.get('/families/:fid/members', requireUser, familyAccess(), wrap(async (req, res) => {
   const { rows } = await query(
-    `SELECT u.id, u.name, u.email, m.role, m.relationship, m.created_at FROM memberships m JOIN users u ON u.id = m.user_id
+    `SELECT u.id, u.name, u.email, m.role, m.relationship, m.prefs, m.created_at FROM memberships m JOIN users u ON u.id = m.user_id
      WHERE m.family_id = $1 ORDER BY m.created_at`, [req.fid]);
   const invites = req.role === 'owner'
     ? (await query(`SELECT code, role, expires_at FROM invites WHERE family_id = $1 AND used_by IS NULL AND expires_at > now() ORDER BY created_at DESC`, [req.fid])).rows
@@ -235,6 +235,14 @@ router.patch('/families/:fid/members/:uid', requireUser, familyAccess(), json, w
   if (!self && req.role !== 'owner') throw new HttpError(403, 'Only family admins can do that');
   if (req.body.relationship != null) {
     await query('UPDATE memberships SET relationship = $1 WHERE family_id = $2 AND user_id = $3', [str(req.body.relationship, 40), req.fid, uid]);
+  }
+  // Personal settings (e.g. { reminders: false }) — only you can change your own
+  if (req.body.prefs != null && self) {
+    const p = req.body.prefs;
+    if (typeof p !== 'object' || Array.isArray(p)) throw new HttpError(400, 'Invalid settings');
+    const clean = {};
+    if ('reminders' in p) clean.reminders = !!p.reminders;
+    await query('UPDATE memberships SET prefs = prefs || $1::jsonb WHERE family_id = $2 AND user_id = $3', [JSON.stringify(clean), req.fid, uid]);
   }
   if (req.body.role != null) {
     if (req.role !== 'owner') throw new HttpError(403, 'Only family admins can change roles');
@@ -305,7 +313,7 @@ router.get('/families/:fid/sync', requireUser, familyAccess(), wrap(async (req, 
   const babies = await query('SELECT * FROM babies WHERE family_id = $1 AND updated_at >= $2 ORDER BY updated_at', [req.fid, since]);
   const entries = await query('SELECT * FROM entries WHERE family_id = $1 AND updated_at >= $2 ORDER BY updated_at LIMIT 5000', [req.fid, since]);
   const members = await query(
-    `SELECT u.id, u.name, m.role, m.relationship FROM memberships m JOIN users u ON u.id = m.user_id WHERE m.family_id = $1`, [req.fid]);
+    `SELECT u.id, u.name, m.role, m.relationship, m.prefs FROM memberships m JOIN users u ON u.id = m.user_id WHERE m.family_id = $1`, [req.fid]);
   const more = entries.rows.length === 5000;
   res.json({
     babies: babies.rows.map(babyOut),
