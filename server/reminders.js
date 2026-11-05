@@ -87,10 +87,61 @@ async function run(now = new Date()) {
   return sent;
 }
 
+// ---------- Care timers (feed / diaper / pump / medicine / nap / one-time) ----------
+// Logic lives in public/js/timer-core.js so the app's countdown and the push always agree.
+let corePromise;
+const core = () => (corePromise = corePromise || import('../public/js/timer-core.js'));
+const FOLLOW_UP_MS = 30 * 60_000;
+const STALE_MS = 6 * 3600_000; // don't nag about timers that went off hours ago
+
+// Who hears a family's timers: members with a phone subscribed, unless they turned reminders off.
+// Viewers (e.g. grandparents) are opted out unless they turn it on.
+async function recipients(familyId) {
+  const { rows } = await query(
+    `SELECT DISTINCT m.user_id, m.role, m.prefs FROM memberships m JOIN push_subscriptions p ON p.user_id = m.user_id WHERE m.family_id = $1`, [familyId]);
+  return rows.filter((r) => (r.prefs && 'reminders' in r.prefs) ? r.prefs.reminders : r.role !== 'viewer').map((r) => r.user_id);
+}
+
+async function runTimers(now = Date.now()) {
+  const { computeDue, reminderText } = await core();
+  const { rows: timers } = await query(
+    `SELECT e.id, e.family_id, e.baby_id, e.t, e.data, b.name AS baby_name FROM entries e JOIN babies b ON b.id = e.baby_id
+     WHERE e.type = 'timer' AND NOT e.deleted AND NOT b.deleted AND COALESCE((e.data->>'enabled')::boolean, true)`);
+  const logsByBaby = new Map();
+  let sent = 0;
+  for (const tm of timers) {
+    if (!logsByBaby.has(tm.baby_id)) {
+      const { rows } = await query(
+        `SELECT type, t, data FROM entries WHERE baby_id = $1 AND NOT deleted AND type <> 'timer' AND t > now() - interval '14 days'`, [tm.baby_id]);
+      logsByBaby.set(tm.baby_id, rows);
+    }
+    const logs = logsByBaby.get(tm.baby_id);
+    const info = computeDue(tm, logs, now);
+    if (info.state !== 'due' || now - info.due > STALE_MS) continue;
+    const lastBreast = logs.filter((e) => e.type === 'breast' && !(e.data && e.data.running)).sort((a, b) => new Date(b.t) - new Date(a.t))[0];
+    const lastSide = lastBreast && lastBreast.data ? lastBreast.data.lastSide : null;
+    // One alert when due, one follow-up 30 min later if still not logged — never more.
+    const firstIsNew = await claim(`timer:${tm.id}:${info.due}`);
+    let followUp = null;
+    if (now - info.due >= FOLLOW_UP_MS && tm.data.kind !== 'once') {
+      if (await claim(`timer-f:${tm.id}:${info.due}`)) followUp = true;
+    } else if (firstIsNew) followUp = false;
+    if (followUp === null) continue;
+    const msg = reminderText(tm, tm.baby_name, info, { followUp, lastSide, now });
+    for (const uid of await recipients(tm.family_id)) {
+      sent += await push.sendToUser(uid, { ...msg, url: '/#today', tag: `timer-${tm.id}` });
+    }
+  }
+  return sent;
+}
+
 function start() {
   const tick = () => run().catch((e) => console.error('[reminders]', e.message));
   setTimeout(tick, 15_000).unref();
   setInterval(tick, 10 * 60_000).unref();
+  const timerTick = () => runTimers().catch((e) => console.error('[timers]', e.message));
+  setTimeout(timerTick, 5_000).unref();
+  setInterval(timerTick, 60_000).unref();
 }
 
-module.exports = { start, run, celebration, localParts };
+module.exports = { start, run, runTimers, recipients, celebration, localParts };

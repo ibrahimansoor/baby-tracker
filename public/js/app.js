@@ -11,6 +11,7 @@ import { renderMemories } from './views/memories.js';
 import { renderMore } from './views/more.js';
 import { renderGuide } from './views/guide.js';
 import { runningBreast, breastTotals } from './views/log.js';
+import { tickTimers } from './views/timers.js';
 
 const TABS = ['today', 'history', 'growth', 'memories', 'more'];
 const VIEWS = { today: renderToday, history: renderHistory, growth: renderGrowth, memories: renderMemories, more: renderMore, guide: renderGuide };
@@ -107,6 +108,7 @@ function tick() {
     $$('[data-breast-total]').forEach((el) => { el.textContent = fmtClock(t.total); });
     $$('[data-side-time]').forEach((el) => { el.textContent = fmtClock(t[el.dataset.sideTime]); });
   }
+  if (store.me && phase === 'ready') tickTimers(now);
 }
 setInterval(tick, 1000);
 // Keep relative times/greetings fresh

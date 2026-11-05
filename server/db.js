@@ -133,6 +133,9 @@ CREATE TABLE IF NOT EXISTS reminders_sent (
   sent_at timestamptz NOT NULL DEFAULT now()
 );
 
+-- Additive upgrades (safe to re-run; never drop or rewrite existing data)
+ALTER TABLE memberships ADD COLUMN IF NOT EXISTS prefs jsonb NOT NULL DEFAULT '{}';
+
 CREATE TABLE IF NOT EXISTS app_config (
   key text PRIMARY KEY,
   value jsonb NOT NULL

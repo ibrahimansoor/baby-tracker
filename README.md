@@ -26,6 +26,15 @@ A modern, Italian-inspired baby tracker for the whole family. Log every feed, na
 - **Invite family members** with a private link. Each person gets a role: **Admin**, **Can add & edit** or **View only**. Admins can change roles or remove people.
 - Multiple babies (siblings, twins) and multiple families (e.g. a nanny for two families).
 
+**Care timers**
+- Timers for **breastfeeding, formula, any feed, diaper, pump, medicine and naps**, each repeating every so many hours from the last time it was logged. Logging a feed or a diaper change restarts the countdown automatically, and a feed or nap in progress pauses it.
+- **One-time timers** ("warm a bottle in 15 minutes").
+- **Countdowns on Today**, which turn red when something is due.
+- **When a timer is due:**
+  - The family gets an alert, plus one follow-up 30 minutes later if nothing has been logged.
+  - If the app is open, a banner appears with **Log now** and **Snooze 15m** buttons.
+- Everyone in the family sees the same timers. Each person can turn their own alerts off. View-only members are opted out by default.
+
 **Reminders**
 - **Push notifications**:
   - birthdays, plus a heads-up the day before

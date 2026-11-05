@@ -35,12 +35,20 @@ export const family = () => store.families.find((f) => f.id === store.familyId) 
 export const baby = () => store.babies.get(store.babyId) || null;
 export const babies = () => [...store.babies.values()].filter((b) => !b.deleted).sort((a, b) => a.birth.localeCompare(b.birth));
 export const memberName = (id) => { const m = store.members.find((x) => x.id === id); return m ? m.name : ''; };
-/** Live entries for the current baby, newest first */
+/** Live entries (logs) for the current baby, newest first. Timers are settings, not logs, so they're left out. */
 export function entries(pred) {
   const out = [];
-  for (const e of store.entries.values()) if (!e.deleted && e.babyId === store.babyId && (!pred || pred(e))) out.push(e);
+  for (const e of store.entries.values()) if (!e.deleted && e.type !== 'timer' && e.babyId === store.babyId && (!pred || pred(e))) out.push(e);
   return out.sort((a, b) => b.t - a.t);
 }
+/** Care timers for the current baby (oldest first, so cards keep a stable order) */
+export function timers() {
+  const out = [];
+  for (const e of store.entries.values()) if (!e.deleted && e.type === 'timer' && e.babyId === store.babyId) out.push(e);
+  return out.sort((a, b) => a.t - b.t);
+}
+/** This person's membership settings in the current family */
+export const myPrefs = () => { const m = store.members.find((x) => x.id === (store.me && store.me.id)); return (m && m.prefs) || {}; };
 
 const fromServerEntry = (e, familyId) => ({ ...e, t: new Date(e.t).getTime(), familyId, pending: false });
 const fromServerBaby = (b, familyId) => ({ ...b, familyId, pending: false });

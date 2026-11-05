@@ -192,6 +192,66 @@ test('password reset flow and password change', async () => {
   assert.equal((await c.patch('/me', { currentPassword: 'brandnewpass', newPassword: 'whatever123', name: 'Ibrahim M' })).data.user.name, 'Ibrahim M');
 });
 
+test('care timers: due alerts go to the right people, once, with a follow-up', async () => {
+  const pushMod = require('../server/push');
+  const { runTimers } = require('../server/reminders');
+  const sentTo = [];
+  const orig = pushMod.sendToUser;
+  pushMod.sendToUser = async (uid, msg) => { sentTo.push({ uid, ...msg }); return 1; };
+  try {
+    const momId = (await mom.get('/me')).data.user.id;
+    const nanaId = (await nana.get('/me')).data.user.id;
+    for (const [uid, n] of [[momId, 'm'], [nanaId, 'n']]) {
+      await pool.query(`INSERT INTO push_subscriptions (endpoint, user_id, keys) VALUES ($1, $2, '{"p256dh":"x","auth":"y"}') ON CONFLICT DO NOTHING`, [`https://push.example/${n}`, uid]);
+    }
+    // a fresh baby so earlier tests' logs don't interfere
+    const babyId = crypto.randomUUID();
+    assert.equal((await mom.put(`/families/${fid}/babies/${babyId}`, { name: 'Leo', birth: '2026-10-01' })).status, 200);
+    // timer entries are accepted; last bottle 4h ago, timer every 3h → due an hour ago
+    const now = Date.now();
+    await mom.put(`/families/${fid}/entries/${crypto.randomUUID()}`, { babyId, type: 'bottle', t: new Date(now - 4 * 3600e3).toISOString(), data: { ml: 90 } });
+    const timerId = crypto.randomUUID();
+    const put = await mom.put(`/families/${fid}/entries/${timerId}`, { babyId, type: 'timer', t: new Date(now - 5 * 3600e3).toISOString(), data: { kind: 'bottle', intervalMin: 180, enabled: true } });
+    assert.equal(put.status, 200);
+    assert.equal((await nana.put(`/families/${fid}/entries/${crypto.randomUUID()}`, { babyId, type: 'timer', t: new Date().toISOString(), data: { kind: 'feed', intervalMin: 180 } })).status, 403);
+
+    // due 1h ago (> 30 min) → a single follow-up, owner only (viewers are opted out by default)
+    await runTimers(now);
+    assert.equal(sentTo.length, 1);
+    assert.equal(sentTo[0].uid, momId);
+    assert.match(sentTo[0].title, /bottle/);
+    assert.equal(sentTo[0].tag, `timer-${timerId}`);
+    await runTimers(now + 60e3);
+    assert.equal(sentTo.length, 1, 'no repeats');
+
+    // logging a bottle resets the timer; when the next one is due, the first alert goes out
+    await mom.put(`/families/${fid}/entries/${crypto.randomUUID()}`, { babyId, type: 'bottle', t: new Date(now).toISOString(), data: { ml: 60 } });
+    await runTimers(now + 3 * 3600e3 - 60e3);
+    assert.equal(sentTo.length, 1, 'not due yet');
+    // nana opts in to reminders on her phone
+    assert.equal((await nana.patch(`/families/${fid}/members/${nanaId}`, { prefs: { reminders: true } })).status, 200);
+    await runTimers(now + 3 * 3600e3 + 60e3);
+    assert.deepEqual(sentTo.slice(1).map((m) => m.uid).sort(), [momId, nanaId].sort());
+    assert.match(sentTo[1].body, /Last bottle was 3h/);
+    await runTimers(now + 3 * 3600e3 + 31 * 60e3);
+    assert.equal(sentTo.length, 5, 'one follow-up each');
+    assert.match(sentTo[4].title, /^Reminder:/);
+
+    // turning the timer off silences it; mom opting out removes her
+    await mom.put(`/families/${fid}/entries/${timerId}`, { babyId, type: 'timer', t: new Date(now - 5 * 3600e3).toISOString(), data: { kind: 'bottle', intervalMin: 180, enabled: false } });
+    await runTimers(now + 9 * 3600e3);
+    assert.equal(sentTo.length, 5);
+    assert.equal((await mom.patch(`/families/${fid}/members/${momId}`, { prefs: { reminders: false } })).status, 200);
+    const members = await mom.get(`/families/${fid}/members`);
+    assert.equal(members.data.members.find((m) => m.id === momId).prefs.reminders, false);
+    // you can't change someone else's reminder setting
+    await nana.patch(`/families/${fid}/members/${momId}`, { prefs: { reminders: true } });
+    assert.equal((await mom.get(`/families/${fid}/members`)).data.members.find((m) => m.id === momId).prefs.reminders, false);
+  } finally {
+    pushMod.sendToUser = orig;
+  }
+});
+
 test('reminder celebrations', () => {
   assert.equal(celebration('Nora', '2025-10-06', '2026-10-06').kind, 'birthday');
   assert.match(celebration('Nora', '2025-10-06', '2026-10-06').title, /1st birthday/);
