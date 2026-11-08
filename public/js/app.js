@@ -41,6 +41,61 @@ function inviteAcceptScreen() {
 }
 
 let renderQueued = false;
+let enterTimer;
+const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// One indicator glides between tabs on a spring
+function placeTabIndicator() {
+  const bar = $('#tabbar');
+  if (!bar || bar.hidden) return;
+  let ind = $('.tab-ind', bar);
+  if (!ind) { ind = document.createElement('span'); ind.className = 'tab-ind'; bar.prepend(ind); }
+  const act = $('button.active', bar);
+  if (!act) { ind.style.opacity = '0'; return; }
+  const first = !ind.dataset.placed;
+  if (first) ind.style.transition = 'none';
+  ind.style.opacity = '1';
+  ind.style.width = `${act.offsetWidth}px`;
+  ind.style.transform = `translateX(${act.offsetLeft}px)`;
+  if (first) { ind.getBoundingClientRect(); ind.style.transition = ''; ind.dataset.placed = '1'; }
+}
+window.addEventListener('resize', () => { const i = $('.tab-ind'); if (i) delete i.dataset.placed; placeTabIndicator(); });
+
+// Today's numbers count up and rings fill — only when a value actually changes
+const lastNums = new Map(), lastRings = new Map();
+function animateStats() {
+  const still = reduceMotion();
+  $$('[data-count]').forEach((el) => {
+    const key = `${el.dataset.count}|${store.babyId}`;
+    const to = Number(el.textContent);
+    const from = lastNums.has(key) ? lastNums.get(key) : 0;
+    lastNums.set(key, to);
+    if (still || from === to || Number.isNaN(to)) return;
+    const t0 = performance.now(), dur = 750;
+    el.textContent = from;
+    const step = (now) => {
+      const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(from + (to - from) * e);
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+  $$('circle[data-ring]').forEach((c) => {
+    const key = `${c.dataset.ring}|${store.babyId}`;
+    const to = c.getAttribute('stroke-dashoffset');
+    const from = lastRings.has(key) ? lastRings.get(key) : c.getAttribute('stroke-dasharray');
+    lastRings.set(key, to);
+    if (still || String(from) === String(to)) return;
+    c.style.transition = 'none';
+    c.style.strokeDashoffset = from;
+    c.getBoundingClientRect();
+    c.style.transition = '';
+    requestAnimationFrame(() => { c.style.strokeDashoffset = to; });
+  });
+}
+
+// Decorative motion rests while the app is in the background
+document.addEventListener('visibilitychange', () => document.documentElement.classList.toggle('paused', document.hidden));
 export function render() {
   // Don't yank the page out from under someone typing in a main-view form
   const a = document.activeElement;
@@ -68,6 +123,14 @@ export function render() {
   if (!sameScreen) { view.dataset.key = key; view.classList.remove('enter'); void view.offsetWidth; view.classList.add('enter'); }
   view.innerHTML = html;
   if (typed) restoreForm(view, typed);
+  if (!sameScreen) {
+    // Cards rise in one after another, then the class comes off so later redraws stay calm
+    [...view.children].forEach((c, i) => c.style.setProperty('--i', Math.min(i, 12)));
+    clearTimeout(enterTimer);
+    enterTimer = setTimeout(() => view.classList.remove('enter'), 1400);
+  }
+  placeTabIndicator();
+  animateStats();
   tick();
 }
 

@@ -1095,3 +1095,190 @@ button, .chip, .action, .entry, .tabbar button, label.chip, .skin, .ph {
 .autumn-promo .btn-row { margin-top: 10px; }
 .autumn-promo .btn-try { background: #fff; color: #A8401A; }
 .autumn-promo .ap-close { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border-radius: 50%; border: 0; background: rgba(255,255,255,.18); color: #fff; display: grid; place-items: center; font-size: 15px; }
+
+/* ==========================================================
+   Motion system — shared timing, used by every theme
+   ========================================================== */
+:root {
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --spring: cubic-bezier(.34, 1.56, .64, 1);
+  --press: .97;
+}
+
+/* Screens rise in, one card after another */
+.view.enter { animation: none; }
+.view.enter > * { animation: rise .6s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 45ms); }
+@keyframes rise { from { opacity: 0; transform: translateY(14px) scale(.985); } }
+
+/* Tab bar: one indicator glides between tabs on a spring */
+.tabbar button { position: relative; z-index: 1; }
+.tabbar button.active { background: transparent; }
+.tab-ind {
+  position: absolute; top: 6px; bottom: 6px; left: 0; width: 0; z-index: 0; border-radius: 18px;
+  background: var(--tab-active, var(--accent));
+  transition: transform .55s var(--spring), width .55s var(--spring), opacity .2s;
+}
+.tabbar button svg { transition: transform .45s var(--spring); }
+.tabbar button.active svg { transform: translateY(-1px) scale(1.12); }
+
+/* Rings fill, numbers count up (driven from app.js) */
+.ring .fg { transition: stroke-dashoffset 1.1s var(--ease-out), stroke .3s; }
+
+/* Press feedback that confirms the tap */
+.action, .entry, .timer-card, .more-chip, .chip, .btn, .g-tile, .skin, .kind, .side-btn, .list-row { transition: transform .35s var(--spring), box-shadow .25s, background-color .25s, border-color .25s, filter .2s; }
+.action:active, .entry:active, .timer-card:active, .more-chip:active, .btn:active, .g-tile:active, .kind:active, .side-btn:active { transform: scale(var(--press)); transition-duration: .12s; }
+
+/* Theme switch: a circle of the new theme grows from your tap */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { z-index: 2; }
+
+/* Pause everything decorative while the app is in the background */
+html.paused .scene *, html.paused .leaf, html.paused .leaf svg, html.paused .sc-blobs i { animation-play-state: paused !important; }
+
+/* Optional paper grain for the textured themes */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: var(--grain, 0);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .22 0 0 0 0 .12 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ==========================================================
+   Scenes — the animated world inside each hero
+   ========================================================== */
+.scene { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.scene-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.scene-svg * { transform-box: fill-box; }
+.skin-hero .scene { z-index: -1; }
+
+/* Shared moves */
+.sc-breathe { transform-origin: center; animation: sc-breathe 7s ease-in-out infinite alternate; }
+@keyframes sc-breathe { from { transform: scale(.92); opacity: .75; } to { transform: scale(1.08); opacity: 1; } }
+.sc-swing { transform-origin: 50% 0; animation: sc-swing 3.2s ease-in-out infinite alternate; }
+@keyframes sc-swing { from { transform: rotate(-7deg); } to { transform: rotate(7deg); } }
+.sc-glint { transform-origin: center; animation: sc-glint 2.6s ease-in-out infinite; }
+@keyframes sc-glint { 0%, 100% { opacity: 0; transform: scale(.3) rotate(0); } 45% { opacity: 1; transform: scale(1.15) rotate(45deg); } }
+.sc-wave { animation: sc-slide 12s linear infinite; }
+@keyframes sc-slide { from { transform: translateX(0); } to { transform: translateX(-400px); } }
+.sc-gull { animation: sc-fly 28s linear infinite; }
+@keyframes sc-fly { from { transform: translate(-60px, 0); } 50% { transform: translate(200px, -10px); } to { transform: translate(470px, 6px); } }
+
+/* Pomodoro — sunlit garden */
+.sc-mote { animation: sc-mote 11s linear infinite; }
+@keyframes sc-mote { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: .9; } 85% { opacity: .5; } 100% { transform: translate(18px, -230px); opacity: 0; } }
+.sc-vine { transform-origin: 100% 0; animation: sc-vine 6.5s ease-in-out infinite alternate; }
+@keyframes sc-vine { from { transform: rotate(-2.2deg); } to { transform: rotate(2.4deg); } }
+
+/* Positano — the sea */
+.sc-w1 { animation-duration: 9s; }
+.sc-w2 { animation-duration: 14s; animation-direction: reverse; }
+.sc-w3 { animation-duration: 21s; }
+.sc-boat { transform-origin: 50% 100%; animation: sc-boat 4.2s ease-in-out infinite alternate; }
+@keyframes sc-boat { from { transform: translateY(-2px) rotate(-4deg); } to { transform: translateY(3px) rotate(4deg); } }
+
+/* Limone — lemon grove */
+.sc-rays { transform-box: view-box; transform-origin: 0 0; animation: sc-spin 90s linear infinite; }
+@keyframes sc-spin { to { transform: rotate(360deg); } }
+.sc-dapple { animation: sc-dapple 17s ease-in-out infinite alternate; }
+@keyframes sc-dapple { 0% { transform: translate(0, 0); opacity: .7; } 50% { transform: translate(34px, -18px); opacity: 1; } 100% { transform: translate(-22px, 12px); opacity: .6; } }
+.sc-branch { transform-origin: 100% 0; animation: sc-branch 7s ease-in-out infinite alternate; }
+@keyframes sc-branch { from { transform: rotate(-2.6deg); } to { transform: rotate(2.6deg); } }
+.scene-limone .sc-swing { animation-duration: 2.8s; }
+
+/* Milano — gold, framed */
+.sc-drift { animation: sc-drift 60s linear infinite alternate; }
+@keyframes sc-drift { to { transform: translateX(200px); } }
+.sc-sheen { animation: sc-sheen 7s var(--ease-out) infinite; }
+@keyframes sc-sheen { 0% { transform: translateX(0); } 45%, 100% { transform: translateX(700px); } }
+.sc-draw { stroke-dasharray: 1; stroke-dashoffset: 0; animation: sc-draw 2.4s var(--ease-out) both; }
+.sc-d2 { animation-delay: .7s; }
+@keyframes sc-draw { from { stroke-dashoffset: 1; } }
+
+/* Toscana — golden-hour hills */
+.sc-h1 { animation-duration: 70s; }
+.sc-h2 { animation-duration: 110s; }
+.sc-h3 { animation-duration: 160s; }
+.sc-cypress { transform-origin: 50% 100%; animation: sc-cypress 5s ease-in-out infinite alternate; }
+@keyframes sc-cypress { from { transform: rotate(-2deg); } to { transform: rotate(2.2deg); } }
+.scene-toscana .sc-gull { animation-duration: 34s; }
+
+/* Autumn — bokeh, branch, wind */
+.sc-bokeh { transform-origin: center; animation: sc-breathe 6s ease-in-out infinite alternate; }
+.sc-branch-l { transform-origin: 0 0; animation: sc-branch 6s ease-in-out infinite alternate; }
+.sc-farleaf { animation: sc-farleaf 15s linear infinite; }
+@keyframes sc-farleaf { from { transform: translate(0, 0) rotate(0); } to { transform: translate(-40px, 320px) rotate(300deg); } }
+[data-skin="autumn"] .scene .leaves { animation: sc-gust 13s ease-in-out infinite; }
+@keyframes sc-gust { 0%, 60%, 100% { transform: translateX(0); } 75% { transform: translateX(-26px); } 85% { transform: translateX(-12px); } }
+
+/* Gelato — pastel lava-lamp blobs and sprinkles */
+.sc-blobs { position: absolute; inset: -20%; }
+.sc-blobs i { position: absolute; width: 58%; aspect-ratio: 1; border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%; animation: sc-blob 18s ease-in-out infinite alternate; }
+.sc-blobs .b1 { left: -6%; top: 6%; background: radial-gradient(circle at 35% 35%, #FFC6D8, rgba(255, 184, 207, 0) 70%); }
+.sc-blobs .b2 { right: -8%; top: -4%; background: radial-gradient(circle at 40% 40%, #D5F5C4, rgba(200, 239, 180, 0) 70%); animation-duration: 22s; animation-delay: -6s; }
+.sc-blobs .b3 { left: 30%; bottom: -10%; background: radial-gradient(circle at 50% 40%, #FFE6C2, rgba(255, 214, 194, 0) 70%); animation-duration: 26s; animation-delay: -11s; }
+@keyframes sc-blob {
+  0% { transform: translate(0, 0) rotate(0); border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%; }
+  50% { transform: translate(8%, 6%) rotate(40deg); border-radius: 63% 37% 43% 57% / 55% 62% 38% 45%; }
+  100% { transform: translate(-6%, 10%) rotate(80deg); border-radius: 38% 62% 56% 44% / 48% 38% 62% 52%; }
+}
+.sc-sprinkle { transform-origin: center; animation: sc-sprinkle 12s linear infinite; }
+@keyframes sc-sprinkle { from { transform: translateY(0) rotate(0); opacity: 0; } 10% { opacity: .9; } 90% { opacity: .8; } to { transform: translateY(-300px) rotate(540deg); opacity: 0; } }
+
+/* ==========================================================
+   Signature details per theme
+   ========================================================== */
+
+/* Pomodoro — warm glow on the hero, tomato bead before headings */
+[data-skin="pomodoro"] .section-title h2::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 8px; vertical-align: 2px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #FF8A6E, #E23A22); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+/* Positano — majolica wave under headings, sea-glass cards */
+[data-skin="positano"] .section-title h2 { position: relative; padding-bottom: 8px; }
+[data-skin="positano"] .section-title h2::after {
+  content: ""; position: absolute; left: 0; bottom: 0; width: 64px; height: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='6'%3E%3Cpath d='M0 3q4-4 8 0t8 0' fill='none' stroke='%231D4ED8' stroke-width='1.5'/%3E%3C/svg%3E") 0 0 / 16px 6px repeat-x;
+  -webkit-mask: linear-gradient(90deg, #000 55%, transparent); mask: linear-gradient(90deg, #000 55%, transparent);
+  animation: sc-slide-small 3s linear infinite;
+}
+@keyframes sc-slide-small { to { background-position: 16px 0; } }
+:root[data-theme="dark"][data-skin="positano"] .section-title h2::after { filter: brightness(2.2); }
+[data-skin="positano"] .card, [data-skin="positano"] .entry, [data-skin="positano"] .timer-card { box-shadow: 0 1px 0 rgba(29, 78, 216, .05), 0 10px 24px -18px rgba(18, 56, 184, .35); }
+
+/* Limone — a little lemon before headings, sunlit cards */
+[data-skin="limone"] .section-title h2::before { content: ""; display: inline-block; width: 13px; height: 10px; margin-right: 8px; vertical-align: 1px; border-radius: 50% / 55%; background: radial-gradient(circle at 35% 30%, #FFF6A8, #FFD12E 55%, #E9AE00); box-shadow: 7px -5px 0 -3px #2F7A3E; }
+[data-skin="limone"] .action .ico, [data-skin="limone"] .entry .ico, [data-skin="limone"] .timer-card .ico { border-radius: 50%; }
+
+/* Milano — gold foil name, hairlines, small caps, underline tab */
+[data-skin="milano"] .hero h1 {
+  background: linear-gradient(100deg, #fff 0%, #fff 38%, #F5E3B3 46%, #D8B871 50%, #fff 58%, #fff 100%) 0 0 / 250% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent; animation: foil 6.5s var(--ease-out) infinite;
+}
+@keyframes foil { from { background-position: 100% 0; } 50%, to { background-position: 0 0; } }
+[data-skin="milano"] .eyebrow { letter-spacing: .24em; font-size: 11px; }
+[data-skin="milano"] .card, [data-skin="milano"] .entry, [data-skin="milano"] .timer-card { box-shadow: inset 0 1px 0 rgba(216, 184, 113, .55); }
+[data-skin="milano"] .section-title h2 { font-size: 26px; }
+[data-skin="milano"] .section-title h2::after { content: ""; display: block; width: 28px; height: 1px; margin-top: 6px; background: #D8B871; }
+[data-skin="milano"] .tab-ind { top: auto; bottom: 7px; height: 3px; left: 0; border-radius: 3px; background: #D8B871; }
+[data-skin="milano"] .tabbar button.active { color: #D8B871; }
+
+/* Toscana — arched windows for icons, terracotta grain */
+[data-skin="toscana"] { --grain: .07; }
+[data-skin="toscana"] .action .ico, [data-skin="toscana"] .entry .ico, [data-skin="toscana"] .timer-card .ico,
+[data-skin="toscana"] .mini .ico, [data-skin="toscana"] .more-chip .ico, [data-skin="toscana"] .kind .ico, [data-skin="toscana"] .gcard h3 .ico { border-radius: 999px 999px 9px 9px; }
+[data-skin="toscana"] .section-title h2::before { content: ""; display: inline-block; width: 10px; height: 14px; margin-right: 8px; vertical-align: -1px; border-radius: 999px 999px 2px 2px; background: var(--accent); }
+
+/* Autumn — a touch of paper grain */
+[data-skin="autumn"] { --grain: .05; }
+
+/* Gelato — squishy, bouncy, rounded */
+[data-skin="gelato"] { --press: .92; }
+[data-skin="gelato"] .action { box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .7); }
+[data-skin="gelato"] .action .ico, [data-skin="gelato"] .entry .ico, [data-skin="gelato"] .timer-card .ico { border-radius: 46% 54% 50% 50% / 55% 50% 50% 45%; }
+[data-skin="gelato"] .section-title h2::before { content: ""; display: inline-block; width: 22px; height: 8px; margin-right: 8px; vertical-align: 2px;
+  background: radial-gradient(circle, #E8457A 3px, transparent 3.5px) 0 0 / 8px 8px, radial-gradient(circle, #6CC070 3px, transparent 3.5px) 7px 0 / 8px 8px, radial-gradient(circle, #FFB020 3px, transparent 3.5px) 14px 0 / 8px 8px; background-repeat: no-repeat; }
+
+/* Tab bar tinted to each world */
+:root[data-skin="positano"] .tabbar { background: rgba(9, 28, 78, .93); }
+:root[data-skin="limone"] .tabbar { background: rgba(28, 44, 20, .93); }
+:root[data-skin="toscana"] .tabbar { background: rgba(58, 30, 18, .93); }
+:root[data-skin="gelato"]:not([data-theme="dark"]) .tabbar { background: rgba(255, 255, 255, .86); border: 1px solid var(--line); }
+:root[data-skin="gelato"]:not([data-theme="dark"]) .tabbar button { color: rgba(58, 31, 43, .5); }
+:root[data-skin="gelato"]:not([data-theme="dark"]) .tabbar button.active { color: #fff; }
+@media (prefers-color-scheme: dark) { :root[data-skin="gelato"]:not([data-theme="light"]) .tabbar { background: rgba(31, 34, 40, .9); } :root[data-skin="gelato"]:not([data-theme="light"]) .tabbar button { color: rgba(255,255,255,.55); } }

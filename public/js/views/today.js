@@ -4,6 +4,7 @@ import { store, baby, babies, entries, canEdit, photoUrl, setBaby } from '../sto
 import { vol, prefs, setPref } from '../prefs.js';
 import { avatar, registerActions, emptyState, leavesHtml } from '../ui.js';
 import { renderTimerSection } from './timers.js';
+import { sceneHtml } from '../scenes.js';
 import { TYPES, entryRow, entryView, runningBreast, runningSleep, breastTimerCard, sleepTimerCard, lastBreastSide, otherSide, sideName, isFeed, hasPee, hasPoop } from './log.js';
 
 export function babyAvatarUrl(b) {
@@ -45,12 +46,12 @@ export function summarize(list) {
 }
 export const entriesOn = (dayStart) => entries((e) => e.t >= dayStart && e.t < dayStart + DAY && !(e.data && e.data.running));
 
-function ring(value, goal, color) {
+function ring(value, goal, color, key) {
   const r = 27, c = 2 * Math.PI * r, pct = Math.min(1, goal ? value / goal : 0);
   return `<div class="ring"><svg viewBox="0 0 64 64">
     <circle class="bg" cx="32" cy="32" r="${r}" fill="none" stroke-width="6"/>
-    <circle class="fg" cx="32" cy="32" r="${r}" fill="none" stroke-width="6" stroke="${color}" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - pct)}"/>
-  </svg><div class="num">${value}</div></div>`;
+    <circle class="fg" data-ring="${key}" cx="32" cy="32" r="${r}" fill="none" stroke-width="6" stroke="${color}" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - pct)}"/>
+  </svg><div class="num" data-count="${key}">${value}</div></div>`;
 }
 
 function nextAppointment() {
@@ -91,7 +92,7 @@ export function renderToday() {
   return `
     <section class="card hero">
       <svg class="hero-tile" aria-hidden="true"><rect width="100%" height="100%"/></svg>
-      ${leavesHtml()}
+      ${sceneHtml(prefs.skin)}
       <div class="hero-top">
         ${avatar({ name: b.name, url: babyAvatarUrl(b), size: 58, cls: 'hero-avatar' })}
         <div class="hero-id">
@@ -146,9 +147,9 @@ export function renderToday() {
 
     <div class="section-title"><h2>Today</h2></div>
     <div class="stats">
-      <div class="card stat">${ring(s.feeds, tg.feeds, 'var(--pink)')}<div class="k">Feeds</div><div class="g">goal ${tg.feeds}–12</div></div>
-      <div class="card stat">${ring(s.wet, tg.wet, 'var(--lemon)')}<div class="k">Wet</div><div class="g">expect ${tg.wet}+</div></div>
-      <div class="card stat">${ring(s.dirty, tg.dirty, 'var(--espresso)')}<div class="k">Dirty</div><div class="g">expect ${tg.dirty}+</div></div>
+      <div class="card stat">${ring(s.feeds, tg.feeds, 'var(--pink)', 'feeds')}<div class="k">Feeds</div><div class="g">goal ${tg.feeds}–12</div></div>
+      <div class="card stat">${ring(s.wet, tg.wet, 'var(--lemon)', 'wet')}<div class="k">Wet</div><div class="g">expect ${tg.wet}+</div></div>
+      <div class="card stat">${ring(s.dirty, tg.dirty, 'var(--espresso)', 'dirty')}<div class="k">Dirty</div><div class="g">expect ${tg.dirty}+</div></div>
     </div>
     <div class="mini-stats">
       <div class="card mini t-bottle"><span class="ico">${icon('i-bottle')}</span><div><div class="v">${prefs.vol === 'oz' ? (s.bottleMl / 29.5735).toFixed(1) : s.bottleMl}<small> ${prefs.vol}</small></div><div class="l">${s.bottles} bottle${s.bottles === 1 ? '' : 's'}</div></div></div>
