@@ -1,8 +1,8 @@
 // Today: hero, celebrations, appointments, live timers, quick log, today's stats & timeline.
 import { esc, icon, fmtAgo, fmtTime, fmtDate, startOfDay, ageText, ageDays, celebration, DAY, fmtDur, mins, parseDay, ics, shareOrDownload } from '../util.js';
 import { store, baby, babies, entries, canEdit, photoUrl, setBaby } from '../store.js';
-import { vol, prefs } from '../prefs.js';
-import { avatar, registerActions, emptyState } from '../ui.js';
+import { vol, prefs, setPref } from '../prefs.js';
+import { avatar, registerActions, emptyState, leavesHtml } from '../ui.js';
 import { renderTimerSection } from './timers.js';
 import { TYPES, entryRow, entryView, runningBreast, runningSleep, breastTimerCard, sleepTimerCard, lastBreastSide, otherSide, sideName, isFeed, hasPee, hasPoop } from './log.js';
 
@@ -14,6 +14,7 @@ export function babyAvatarUrl(b) {
 
 export function greeting() {
   const h = new Date().getHours();
+  if (prefs.skin === 'autumn') return h < 5 ? 'Sweet dreams' : h < 12 ? 'Cozy morning' : h < 18 ? 'Cozy afternoon' : h < 22 ? 'Cozy evening' : 'Sweet dreams';
   return h < 5 ? 'Good night' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : h < 22 ? 'Good evening' : 'Good night';
 }
 
@@ -90,6 +91,7 @@ export function renderToday() {
   return `
     <section class="card hero">
       <svg class="hero-tile" aria-hidden="true"><rect width="100%" height="100%"/></svg>
+      ${leavesHtml()}
       <div class="hero-top">
         ${avatar({ name: b.name, url: babyAvatarUrl(b), size: 58, cls: 'hero-avatar' })}
         <div class="hero-id">
@@ -121,6 +123,8 @@ export function renderToday() {
       <div><div class="small muted">Next checkup</div><b>${fmtDate(appt.at, { weekday: 'short', month: 'short', day: 'numeric' })} · ${fmtTime(appt.at)}</b>${appt.e.data.doctor ? `<div class="small muted">${esc(appt.e.data.doctor)}</div>` : ''}</div>
       <button class="chip" data-act="appt-ics" data-id="${appt.e.id}">${icon('i-calendar')} Add</button>
     </div>` : ''}
+
+    ${autumnPromo()}
 
     ${renderTimerSection()}
 
@@ -160,7 +164,33 @@ export function renderToday() {
   `;
 }
 
+// A gentle, dismissible invitation to the Autumn theme during the fall months
+const PROMO_KEY = 'pomodoro.autumnPromo';
+function autumnPromo() {
+  const month = new Date().getMonth(); // 8–10 = Sep–Nov
+  let seen = false;
+  try { seen = !!localStorage.getItem(PROMO_KEY); } catch { /* private mode */ }
+  if (prefs.skin === 'autumn' || seen || month < 8 || month > 10) return '';
+  return `<div class="autumn-promo">
+    ${leavesHtml().replace('class="leaves"', 'class="leaves on"')}
+    <div class="ap-copy"><b>New: the Autumn theme 🍂</b><span>Maple, pumpkin and gently falling leaves.</span>
+      <div class="btn-row"><button class="btn btn-sm btn-try" data-act="autumn-try">Try it</button></div>
+    </div>
+    <button class="ap-close" data-act="autumn-dismiss" aria-label="Dismiss">✕</button>
+  </div>`;
+}
+
 registerActions({
+  'autumn-try': () => {
+    try { localStorage.setItem(PROMO_KEY, '1'); } catch { /* ignore */ }
+    setPref('skin', 'autumn');
+    window.dispatchEvent(new Event('pomo:theme'));
+    window.dispatchEvent(new Event('pomo:render'));
+  },
+  'autumn-dismiss': () => {
+    try { localStorage.setItem(PROMO_KEY, '1'); } catch { /* ignore */ }
+    window.dispatchEvent(new Event('pomo:render'));
+  },
   'switch-baby': (el) => setBaby(el.dataset.id),
   'appt-ics': async (el) => {
     const e = store.entries.get(el.dataset.id); const b = baby();

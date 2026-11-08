@@ -113,3 +113,6 @@ document.addEventListener('click', (ev) => {
   b.parentElement.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
   b.parentElement.dispatchEvent(new CustomEvent('segchange', { bubbles: true, detail: b.dataset.v }));
 });
+
+// Falling maple leaves (drawn only in the Autumn theme; see style.css)
+export const leavesHtml = () => `<div class="leaves" aria-hidden="true">${'<span class="leaf"><svg><use href="#i-leaf"/></svg></span>'.repeat(7)}</div>`;

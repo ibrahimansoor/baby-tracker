@@ -9,6 +9,7 @@ export const SKINS = [
   { id: 'limone', name: 'Limone', tag: 'Amalfi lemons & leaf green', font: 'Sora + DM Sans', dots: ['#FFD12E', '#2F7A3E', '#F5F7F2', '#1E2A14'] },
   { id: 'milano', name: 'Milano', tag: 'Black, white & gold — editorial', font: 'Instrument Serif + Onest', dots: ['#0E0E0E', '#D8B871', '#F6F6F6', '#FFFFFF'] },
   { id: 'toscana', name: 'Toscana', tag: 'Terracotta, olive & sage', font: 'Bricolage Grotesque + Figtree', dots: ['#B5432A', '#D0683C', '#8F9B5A', '#F4F5F1'] },
+  { id: 'autumn', name: 'Autumn', tag: 'Maple, pumpkin & falling leaves', font: 'Fraunces + Figtree', dots: ['#7F2A17', '#D86F1F', '#E9A43A', '#B23A50'] },
   { id: 'gelato', name: 'Gelato', tag: 'Strawberry & pistachio pastels', font: 'Fredoka + Nunito', dots: ['#FFB8CF', '#C8EFB4', '#E8457A', '#FBF7FA'] }
 ];
 export const skinOf = (id) => SKINS.find((k) => k.id === id) || SKINS[0];

@@ -3,6 +3,7 @@ import { $, esc, icon, uuid, toDateInput } from '../util.js';
 import * as api from '../api.js';
 import { store, setMe, setFamily, saveBaby, importEntries, refreshMe } from '../store.js';
 import { registerActions, toast, segmented, segValue } from '../ui.js';
+import { leavesHtml } from '../ui.js';
 
 export const authState = { mode: 'signup', invite: null, inviteInfo: null, reset: null, busy: false };
 
@@ -42,6 +43,7 @@ function inviteBanner() {
 export function renderAuth() {
   const m = authState.mode;
   const head = `<section class="welcome">
+      ${leavesHtml()}
       <div class="logo-plate"><img class="brand-logo" src="/brand/logo.webp" alt="My Little Pomodoro" width="631" height="640" decoding="async"></div>
       <p class="tag">Every feed, nap, diaper, photo and milestone — shared with the people who love your baby.</p>
     </section>`;
