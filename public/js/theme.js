@@ -2,6 +2,7 @@
 import { $ } from './util.js';
 import { prefs, setPref } from './prefs.js';
 import { openSheet, setSheetBody, closeSheet, registerActions } from './ui.js';
+import { sceneHtml } from './scenes.js';
 
 export const SKINS = [
   { id: 'pomodoro', name: 'Pomodoro', tag: 'Tomato red & Aperol sunset', font: 'Outfit + Inter', dots: ['#E8412C', '#FF8A1F', '#F4F5F7', '#0F1115'] },
@@ -36,6 +37,7 @@ function themeSheetHtml() {
       ${SKINS.map((k) => `<button type="button" class="skin ${prefs.skin === k.id ? 'on' : ''}" data-skin="${k.id}" data-act="pick-skin" data-id="${k.id}" aria-pressed="${prefs.skin === k.id}">
         <div class="skin-hero">
           <svg aria-hidden="true"><rect width="100%" height="100%"/></svg>
+          ${sceneHtml(k.id)}
           ${prefs.skin === k.id ? '<span class="skin-check">✓</span>' : ''}
           <div class="skin-name">${k.name}</div>
         </div>
@@ -57,10 +59,23 @@ export function openThemes() {
   openSheet({ eyebrow: 'Make it yours', title: 'Themes', html: themeSheetHtml(), context: { kind: 'themes' } });
 }
 
+// The new theme grows out of the tapped control as a circle (View Transitions), with a quiet fallback.
+function reveal(el, apply) {
+  if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) { apply(); return; }
+  const r = el ? el.getBoundingClientRect() : { left: innerWidth / 2, top: innerHeight / 2, width: 0, height: 0 };
+  const x = r.left + r.width / 2, y = r.top + r.height / 2;
+  const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+  const t = document.startViewTransition(apply);
+  t.ready.then(() => document.documentElement.animate(
+    { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+    { duration: 720, easing: 'cubic-bezier(.2, .8, .2, 1)', pseudoElement: '::view-transition-new(root)' }
+  )).catch(() => {});
+}
+
 registerActions({
   themes: openThemes,
   'close-sheet': closeSheet,
-  'pick-skin': (el) => { setPref('skin', el.dataset.id); applyTheme(); setSheetBody(themeSheetHtml()); window.dispatchEvent(new Event('pomo:render')); },
-  'pick-mode': (el) => { setPref('theme', el.dataset.v); applyTheme(); setSheetBody(themeSheetHtml()); window.dispatchEvent(new Event('pomo:render')); },
-  'toggle-dark': () => { setPref('theme', isDark() ? 'light' : 'dark'); applyTheme(); window.dispatchEvent(new Event('pomo:render')); }
+  'pick-skin': (el) => reveal(el, () => { setPref('skin', el.dataset.id); applyTheme(); setSheetBody(themeSheetHtml()); window.dispatchEvent(new Event('pomo:render')); }),
+  'pick-mode': (el) => reveal(el, () => { setPref('theme', el.dataset.v); applyTheme(); setSheetBody(themeSheetHtml()); window.dispatchEvent(new Event('pomo:render')); }),
+  'toggle-dark': (el) => reveal(el, () => { setPref('theme', isDark() ? 'light' : 'dark'); applyTheme(); window.dispatchEvent(new Event('pomo:render')); })
 });
