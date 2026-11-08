@@ -22,7 +22,8 @@
       limone: 'family=Sora:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700',
       milano: 'family=Instrument+Serif:ital@0;1&family=Onest:wght@400;500;600;700',
       toscana: 'family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700',
-      gelato: 'family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800'
+      gelato: 'family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800',
+      autumn: 'family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,600&family=Figtree:wght@400;500;600;700;800'
     };
     window.loadSkinFonts = function (skin) {
       if (!window.POMODORO_FONTS[skin] || document.getElementById('font-' + skin)) return;
@@ -102,6 +103,13 @@
         <path d="M4 44V22a16 16 0 0 1 32 0v22" fill="none" stroke="#fff" stroke-width="1.5"/>
         <path d="M12 44V24a8 8 0 0 1 16 0v20" fill="none" stroke="#fff" stroke-width="1"/>
       </pattern>
+      <pattern id="pat-autumn" width="72" height="72" patternUnits="userSpaceOnUse">
+        <path d="M12 1.8l1.5 3.4 2.4-1.1-.5 3.1 3.1-.6-1.2 2.4 3.3 1.3-3 1.6.8 2.3-3.4-.7-.4 2.4-2.1-1.6V22h-1v-6.7l-2.1 1.6-.4-2.4-3.4.7.8-2.3-3-1.6 3.3-1.3-1.2-2.4 3.1.6-.5-3.1 2.4 1.1z" fill="#fff" transform="translate(6 6) rotate(-18 12 12) scale(.9)"/>
+        <path d="M12 1.8l1.5 3.4 2.4-1.1-.5 3.1 3.1-.6-1.2 2.4 3.3 1.3-3 1.6.8 2.3-3.4-.7-.4 2.4-2.1-1.6V22h-1v-6.7l-2.1 1.6-.4-2.4-3.4.7.8-2.3-3-1.6 3.3-1.3-1.2-2.4 3.1.6-.5-3.1 2.4 1.1z" fill="#fff" transform="translate(44 40) rotate(24 12 12) scale(.7)"/>
+        <g transform="translate(48 8) rotate(16)"><path d="M1 5.5a5 4 0 0 1 10 0z" fill="#fff"/><path d="M2.2 6.2h7.6c0 3.6-1.8 6.3-3.8 6.3S2.2 9.8 2.2 6.2z" fill="#fff" opacity=".75"/><path d="M6 1.5v2" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></g>
+        <circle cx="22" cy="56" r="2" fill="#fff"/><circle cx="64" cy="28" r="1.5" fill="#fff"/>
+      </pattern>
+      <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M12 1.8l1.5 3.4 2.4-1.1-.5 3.1 3.1-.6-1.2 2.4 3.3 1.3-3 1.6.8 2.3-3.4-.7-.4 2.4-2.1-1.6V22h-1v-6.7l-2.1 1.6-.4-2.4-3.4.7.8-2.3-3-1.6 3.3-1.3-1.2-2.4 3.1.6-.5-3.1 2.4 1.1z" fill="currentColor"/></symbol>
       <pattern id="pat-gelato" width="60" height="60" patternUnits="userSpaceOnUse">
         <rect x="8" y="10" width="12" height="4" rx="2" fill="#E8457A" transform="rotate(30 14 12)"/>
         <rect x="38" y="6" width="12" height="4" rx="2" fill="#6CC070" transform="rotate(-25 44 8)"/>

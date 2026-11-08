@@ -1,5 +1,5 @@
 // My Little Pomodoro — service worker: offline app shell, cached photos, push notifications.
-const CACHE = 'pomodoro-v7';
+const CACHE = 'pomodoro-v8';
 const PHOTOS = 'pomodoro-photos-v1';
 const SHELL = [
   '/', '/style.css', '/manifest.webmanifest', '/favicon.png', '/brand/mark.webp', '/brand/logo.webp', '/data/who-growth.json',

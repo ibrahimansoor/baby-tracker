@@ -965,3 +965,133 @@ button, .chip, .action, .entry, .tabbar button, label.chip, .skin, .ph {
 .timer-due-actions b { color: var(--red); }
 .timer-due-actions .btn-row { margin-top: 10px; }
 @media (max-width: 360px) { .kind-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* ==========================================================
+   Autumn — maple, pumpkin & falling leaves (a seventh skin)
+   ========================================================== */
+[data-skin="autumn"] {
+  --display: "Fraunces", Georgia, serif;
+  --sans: "Figtree", system-ui, -apple-system, sans-serif;
+  --dw: 600; --dt: -.02em;
+  --radius: 24px;
+  --accent-l: #BF4F17; --accent-d: #F2914F;
+  --accent-soft-l: #FBE7D9; --accent-soft-d: #33200F;
+  --hero: linear-gradient(155deg, #7F2A17 0%, #B5441A 38%, #D86F1F 72%, #E9A43A 100%);
+  --hero-shadow: 0 22px 44px -18px rgba(181, 68, 26, .55);
+  --on-hero: #FFFFFF; --on-hero-2: rgba(255, 244, 232, .88);
+  --glass: rgba(255, 246, 236, .14); --glass-line: rgba(255, 236, 214, .28);
+  --l-bg: #FAF6F1; --l-surface: #FFFFFF; --l-surface-2: #F4ECE3; --l-line: #ECE0D2;
+  --d-bg: #140E0B; --d-surface: #1F1713; --d-surface-2: #2A2019; --d-line: #392A20;
+  --pat: url(#pat-autumn);
+  --pat-op: .2;
+  --tab-active: #BF4F17;
+}
+
+/* Every activity colour re-tinted to the season */
+:root[data-skin="autumn"] {
+  --pink: #B23A50;      --pink-soft: #F8E2E6;      /* breastfeed — cranberry */
+  --riviera: #2D6B66;   --riviera-soft: #DCEDEA;   /* bottle — spruce */
+  --lemon: #C98D10;     --lemon-soft: #FAEFD2;     /* pee — mustard */
+  --espresso: #7A4426;  --espresso-soft: #F1E4D9;  /* poop — chestnut */
+  --violet: #6A4A8A;    --violet-soft: #EDE6F4;    /* sleep — plum */
+  --teal: #5A7C4A;      --teal-soft: #E5EFDF;      /* pump — sage */
+  --orange: #D0651B;    --orange-soft: #FCE9DA;    /* solids — pumpkin */
+  --basil: #687830;     --basil-soft: #EEF0DA;     /* growth — olive */
+  --slate: #7B6858;     --slate-soft: #F0E9E2;     /* notes — taupe */
+}
+:root[data-skin="autumn"][data-theme="dark"] {
+  --pink: #F07A92;      --pink-soft: #35161D;
+  --riviera: #6CC2B9;   --riviera-soft: #10292A;
+  --lemon: #F2BE45;     --lemon-soft: #2F240C;
+  --espresso: #D9A07A;  --espresso-soft: #2A1D14;
+  --violet: #B79BE0;    --violet-soft: #241B31;
+  --teal: #9CC48A;      --teal-soft: #18241A;
+  --orange: #F59A55;    --orange-soft: #33200F;
+  --basil: #C2CF7A;     --basil-soft: #222612;
+  --slate: #C3B2A3;     --slate-soft: #2A221D;
+  --tab-active: #F2914F;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="autumn"]:not([data-theme="light"]) {
+    --pink: #F07A92;      --pink-soft: #35161D;
+    --riviera: #6CC2B9;   --riviera-soft: #10292A;
+    --lemon: #F2BE45;     --lemon-soft: #2F240C;
+    --espresso: #D9A07A;  --espresso-soft: #2A1D14;
+    --violet: #B79BE0;    --violet-soft: #241B31;
+    --teal: #9CC48A;      --teal-soft: #18241A;
+    --orange: #F59A55;    --orange-soft: #33200F;
+    --basil: #C2CF7A;     --basil-soft: #222612;
+    --slate: #C3B2A3;     --slate-soft: #2A221D;
+    --tab-active: #F2914F;
+  }
+}
+:root[data-skin="autumn"] .tabbar { background: rgba(40, 22, 14, .94); }
+
+/* Falling leaves — only drawn in the Autumn theme */
+.leaves { display: none; }
+[data-skin="autumn"] .leaves {
+  display: block; position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: -1;
+}
+.leaf { position: absolute; top: -12%; width: 22px; height: 22px; animation: leaf-fall linear infinite; will-change: transform; }
+.leaf svg { width: 100%; height: 100%; display: block; animation: leaf-sway ease-in-out infinite alternate; transform-origin: 50% 20%; }
+.leaf:nth-child(1) { left: 6%;  color: #F4B63F; animation-duration: 11s; animation-delay: -2s; }
+.leaf:nth-child(2) { left: 22%; color: #FFDFA8; width: 16px; height: 16px; animation-duration: 14s; animation-delay: -9s; }
+.leaf:nth-child(3) { left: 41%; color: #F28C38; width: 26px; height: 26px; animation-duration: 12s; animation-delay: -5s; }
+.leaf:nth-child(4) { left: 58%; color: #FFE6BF; width: 14px; height: 14px; animation-duration: 16s; animation-delay: -12s; }
+.leaf:nth-child(5) { left: 73%; color: #E8692B; animation-duration: 13s; animation-delay: -1s; }
+.leaf:nth-child(6) { left: 88%; color: #F7C463; width: 18px; height: 18px; animation-duration: 15s; animation-delay: -7s; }
+.leaf:nth-child(7) { left: 33%; color: #A8381E; width: 20px; height: 20px; animation-duration: 17s; animation-delay: -14s; }
+.leaf:nth-child(1) svg { animation-duration: 2.6s; }
+.leaf:nth-child(2) svg { animation-duration: 3.4s; }
+.leaf:nth-child(3) svg { animation-duration: 2.9s; }
+.leaf:nth-child(4) svg { animation-duration: 3.8s; }
+.leaf:nth-child(5) svg { animation-duration: 3.1s; }
+.leaf:nth-child(6) svg { animation-duration: 2.4s; }
+.leaf:nth-child(7) svg { animation-duration: 3.6s; }
+@keyframes leaf-fall {
+  0%   { transform: translate3d(0, 0, 0); opacity: 0; }
+  8%   { opacity: .95; }
+  85%  { opacity: .9; }
+  100% { transform: translate3d(-24px, 420px, 0); opacity: 0; }
+}
+@keyframes leaf-sway {
+  from { transform: rotate(-28deg) translateX(-8px); }
+  to   { transform: rotate(32deg) translateX(10px); }
+}
+/* Welcome screen: leaves drift behind the logo */
+.welcome { position: relative; isolation: isolate; }
+[data-skin="autumn"] .welcome .leaves { inset: -10px -16px auto; height: 360px; }
+[data-skin="autumn"] .welcome .leaf { opacity: .8; }
+[data-skin="autumn"] .welcome .leaf:nth-child(odd) { color: #D86F1F; }
+[data-skin="autumn"] .welcome .leaf:nth-child(even) { color: #E9A43A; }
+[data-skin="autumn"] .welcome .leaf:nth-child(7) { color: #8E2F1C; }
+@media (prefers-reduced-motion: reduce) {
+  .leaf { animation: none !important; top: auto; }
+  .leaf:nth-child(odd) { top: 12%; } .leaf:nth-child(even) { top: 58%; }
+  .leaf svg { animation: none !important; transform: rotate(-18deg); }
+}
+
+/* Small seasonal touches */
+[data-skin="autumn"] .section-title h2::before {
+  content: ""; display: inline-block; width: 15px; height: 15px; margin-right: 7px; vertical-align: 1px;
+  background: var(--accent);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.8l1.5 3.4 2.4-1.1-.5 3.1 3.1-.6-1.2 2.4 3.3 1.3-3 1.6.8 2.3-3.4-.7-.4 2.4-2.1-1.6V22h-1v-6.7l-2.1 1.6-.4-2.4-3.4.7.8-2.3-3-1.6 3.3-1.3-1.2-2.4 3.1.6-.5-3.1 2.4 1.1z'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.8l1.5 3.4 2.4-1.1-.5 3.1 3.1-.6-1.2 2.4 3.3 1.3-3 1.6.8 2.3-3.4-.7-.4 2.4-2.1-1.6V22h-1v-6.7l-2.1 1.6-.4-2.4-3.4.7.8-2.3-3-1.6 3.3-1.3-1.2-2.4 3.1.6-.5-3.1 2.4 1.1z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+[data-skin="autumn"] .page-title h1 { font-style: italic; }
+[data-skin="autumn"] .celebrate { background: linear-gradient(120deg, var(--lemon-soft), var(--accent-soft)); }
+
+/* "New: Autumn theme" card on Today */
+.autumn-promo {
+  position: relative; overflow: hidden; isolation: isolate; display: flex; gap: 14px; align-items: center;
+  margin-top: 14px; padding: 16px; border-radius: var(--radius); color: #fff;
+  background: linear-gradient(140deg, #7F2A17 0%, #C2541B 55%, #E9A43A 100%);
+  box-shadow: 0 16px 32px -18px rgba(181, 68, 26, .6);
+}
+.autumn-promo .leaves { display: block; position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: -1; }
+.autumn-promo .ap-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.autumn-promo .ap-copy b { font-family: "Fraunces", Georgia, serif; font-size: 19px; font-weight: 600; }
+.autumn-promo .ap-copy span { font-size: 13px; color: rgba(255, 244, 232, .9); }
+.autumn-promo .btn-row { margin-top: 10px; }
+.autumn-promo .btn-try { background: #fff; color: #A8401A; }
+.autumn-promo .ap-close { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border-radius: 50%; border: 0; background: rgba(255,255,255,.18); color: #fff; display: grid; place-items: center; font-size: 15px; }
