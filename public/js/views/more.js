@@ -137,7 +137,7 @@ export function renderMore() {
 
     <div class="section-title"><h2>Appearance & units</h2></div>
     <div class="card set-list">
-      <button class="set-row" data-act="themes"><div class="theme-row"><span class="mini-hero"></span><div><div class="t">Theme</div><div class="d">Six Italian-inspired looks</div></div></div><span class="chip">Change</span></button>
+      <button class="set-row" data-act="themes"><div class="theme-row"><span class="mini-hero"></span><div><div class="t">Theme</div><div class="d">Eight animated worlds</div></div></div><span class="chip">Change</span></button>
       <div class="set-row"><div><div class="t">Mode</div></div>${segmented('p-theme', [['auto', 'Auto'], ['light', 'Light'], ['dark', 'Dark']], prefs.theme)}</div>
       <div class="set-row"><div><div class="t">Bottles</div></div>${segmented('p-vol', [['ml', 'ml'], ['oz', 'oz']], prefs.vol)}</div>
       <div class="set-row"><div><div class="t">Weight</div></div>${segmented('p-weight', [['kg', 'kg'], ['lb', 'lb']], prefs.weight)}</div>

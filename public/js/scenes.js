@@ -11,6 +11,12 @@ const wave = (y, amp, len) => {
   for (let x = 0; x < 800; x += len) d += ` q ${len / 4} ${-amp} ${len / 2} 0 t ${len / 2} 0`;
   return `${d} V 260 H 0 Z`;
 };
+// The water's surface seen from below: a wave line with the fill above it
+const surface = (y, amp, len) => {
+  let d = `M0 ${y}`;
+  for (let x = 0; x < 800; x += len) d += ` q ${len / 4} ${-amp} ${len / 2} 0 t ${len / 2} 0`;
+  return `${d} V -10 H 0 Z`;
+};
 // Rolling hills, also seamless at 800 wide
 const hills = (y, amp, len) => {
   let d = `M0 ${y}`;
@@ -19,6 +25,23 @@ const hills = (y, amp, len) => {
 };
 const MAPLE = 'M12 1.8l1.5 3.4 2.4-1.1-.5 3.1 3.1-.6-1.2 2.4 3.3 1.3-3 1.6.8 2.3-3.4-.7-.4 2.4-2.1-1.6V22h-1v-6.7l-2.1 1.6-.4-2.4-3.4.7.8-2.3-3-1.6 3.3-1.3-1.2-2.4 3.1.6-.5-3.1 2.4 1.1z';
 const LEAF = 'M0 0c6-6 16-6 22 0-6 6-16 6-22 0z';
+
+// A turtle seen from above, facing right, centred on 0,0. Front flippers paddle; the rest is still.
+const honu = (id) => `
+  <path class="sc-flip sc-flip-r" d="M-20 6c-5 2-9 6-10 10 4 0 9-3 12-7z" fill="#3F7F5C"/>
+  <g transform="scale(1 -1)"><path class="sc-flip sc-flip-r" d="M-20 6c-5 2-9 6-10 10 4 0 9-3 12-7z" fill="#3F7F5C"/></g>
+  <path class="sc-flip sc-flip-f" d="M6 12c6 4 16 12 26 14-4-8-12-15-21-18z" fill="#4C9068"/>
+  <g transform="scale(1 -1)"><path class="sc-flip sc-flip-f" d="M6 12c6 4 16 12 26 14-4-8-12-15-21-18z" fill="#4C9068"/></g>
+  <path d="M-25 0l-6-2.4v4.8z" fill="#3F7F5C"/>
+  <ellipse cx="29" cy="0" rx="8.6" ry="7.2" fill="#5FA67A"/>
+  <circle cx="33" cy="-3.4" r="1.4" fill="#123"/><circle cx="33" cy="3.4" r="1.4" fill="#123"/>
+  <ellipse cx="0" cy="0" rx="24" ry="18.5" fill="#E8D9A8" opacity=".9"/>
+  <ellipse cx="0" cy="0" rx="22" ry="16.8" fill="url(#${id})"/>
+  <g fill="none" stroke="#F4E8C4" stroke-width="1.2" opacity=".75" stroke-linejoin="round">
+    <path d="M-6 -6h12l5 6-5 6h-12l-5-6z"/>
+    <path d="M-11 0h-9M11 0h9M-6 -6l-4-9M6 -6l4-9M-6 6l-4 9M6 6l4 9"/>
+  </g>
+  <ellipse cx="-6" cy="-7" rx="8" ry="3.4" fill="#fff" opacity=".18"/>`;
 
 const SCENES = {
   // Sunlit Italian garden: breathing sun, drifting light motes, a ripe tomato vine swaying
@@ -121,6 +144,22 @@ const SCENES = {
       </g>
     </g>
     <g class="sc-far" opacity=".45">${[[30, 0], [110, -4], [200, -8], [290, -2], [360, -6]].map(([x, d]) => `<g class="sc-farleaf" style="animation-delay:${d}s"><path d="${MAPLE}" fill="#FFE2B8" transform="translate(${x} -20) scale(.45)"/></g>`).join('')}</g>`, 'scene-autumn') + leavesHtml(),
+
+  // Honu Lagoon: sunbeams through the surface, rising bubbles, swaying seagrass and a mama and baby sea turtle gliding by
+  honu: () => svg(`
+    <defs>
+      <radialGradient id="hn-shell" cx=".4" cy=".35"><stop offset="0" stop-color="#7DBA7E"/><stop offset=".6" stop-color="#4E8C5E"/><stop offset="1" stop-color="#2F6347"/></radialGradient>
+      <linearGradient id="hn-ray" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <radialGradient id="hn-dap"><stop offset="0" stop-color="#fff" stop-opacity=".4"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    </defs>
+    <g class="sc-rays-hn">${[[60, 26], [150, 18], [250, 30], [340, 20]].map(([x, w], i) => `<path class="sc-ray" d="M${x} -10h${w}l${w * 1.6} 280h-${w * 2.6}z" fill="url(#hn-ray)" style="animation-delay:-${i * 2.3}s"/>`).join('')}</g>
+    <g class="sc-wave sc-surf"><path d="${surface(8, 4, 100)}" fill="#fff" opacity=".2"/></g>
+    <g class="sc-wave sc-sand"><path d="${hills(236, 12, 200)}" fill="#F2E2BE" opacity=".42"/></g>
+    ${[[90, 240, 40], [250, 246, 52], [360, 238, 34]].map(([x, y, r], i) => `<ellipse class="sc-dapple" cx="${x}" cy="${y}" rx="${r}" ry="${r / 4}" fill="url(#hn-dap)" style="animation-delay:-${i * 5}s"/>`).join('')}
+    <g fill="#2E8B6F" opacity=".7">${[[22, 1, 0], [34, .8, -1.2], [300, .9, -2], [378, 1.1, -.6], [390, .7, -2.6]].map(([x, s, d]) => `<path class="sc-grass" d="M${x} 262c-4-${20 * s} 6-${36 * s} 0-${62 * s}c8 ${20 * s} 4 ${40 * s} 4 ${62 * s}z" style="animation-delay:${d}s"/>`).join('')}</g>
+    <g fill="none" stroke="#fff" stroke-width="1.1" opacity=".7">${[[70, 3, 0], [76, 2, -1.4], [210, 2.6, -4], [330, 3.2, -6.5], [336, 1.8, -7.6], [160, 2, -9]].map(([x, r, d]) => `<circle class="sc-bubble" cx="${x}" cy="262" r="${r}" style="animation-delay:${d}s"/>`).join('')}</g>
+    <g class="sc-honu"><g class="sc-bob"><g transform="translate(0 168) rotate(-6) scale(1.05)">${honu('hn-shell')}</g></g></g>
+    <g class="sc-honu sc-honu-baby"><g class="sc-bob" style="animation-delay:-1.3s"><g transform="translate(-58 196) rotate(-4) scale(.52)">${honu('hn-shell')}</g></g></g>`, 'scene-honu'),
 
   // Gelateria: soft pastel blobs morphing, sprinkles floating up, little sparkles
   gelato: () => `<div class="sc-blobs" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>` + svg(`

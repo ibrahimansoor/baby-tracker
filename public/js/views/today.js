@@ -16,6 +16,7 @@ export function babyAvatarUrl(b) {
 export function greeting() {
   const h = new Date().getHours();
   if (prefs.skin === 'autumn') return h < 5 ? 'Sweet dreams' : h < 12 ? 'Cozy morning' : h < 18 ? 'Cozy afternoon' : h < 22 ? 'Cozy evening' : 'Sweet dreams';
+  if (prefs.skin === 'honu') return h < 5 ? 'Sweet dreams' : h < 12 ? 'Aloha kakahiaka' : h < 18 ? 'Aloha ʻauinalā' : h < 22 ? 'Aloha ahiahi' : 'Sweet dreams';
   return h < 5 ? 'Good night' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : h < 22 ? 'Good evening' : 'Good night';
 }
 

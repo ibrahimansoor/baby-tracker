@@ -50,13 +50,14 @@ A modern, Italian-inspired baby tracker for the whole family. Log every feed, na
 - An existing log from the original single-phone version can be imported in one tap.
 
 **Design**
-- Seven themes, each its own animated world, with its own fonts, palette, icon shapes and heading ornaments:
+- Eight themes, each its own animated world, with its own fonts, palette, icon shapes and heading ornaments:
   - **Pomodoro:** a sunlit garden with a swaying tomato vine.
   - **Positano:** a parallax sea, a bobbing sailboat and gulls.
   - **Limone:** a swinging lemon branch in dappled light.
   - **Milano:** a gold frame that draws itself in, with foil shimmer.
   - **Toscana:** rolling hills with swaying cypresses at golden hour.
   - **Autumn:** wind-blown maple leaves and warm bokeh.
+  - **Honu Lagoon:** a mama and baby sea turtle gliding through sunlit turquoise water, with swaying seagrass and rising bubbles.
   - **Gelato:** morphing pastel blobs and floating sprinkles.
 - A shared motion system:
   - a tab indicator that glides between tabs
