@@ -1,4 +1,4 @@
-// Six Italian-inspired themes × light/dark. Colours, fonts & patterns live in style.css under [data-skin].
+// Eight themes (Italian-inspired, plus seasonal and seaside) × light/dark. Colours, fonts & patterns live in style.css under [data-skin].
 import { $ } from './util.js';
 import { prefs, setPref } from './prefs.js';
 import { openSheet, setSheetBody, closeSheet, registerActions } from './ui.js';
@@ -11,6 +11,7 @@ export const SKINS = [
   { id: 'milano', name: 'Milano', tag: 'Black, white & gold — editorial', font: 'Instrument Serif + Onest', dots: ['#0E0E0E', '#D8B871', '#F6F6F6', '#FFFFFF'] },
   { id: 'toscana', name: 'Toscana', tag: 'Terracotta, olive & sage', font: 'Bricolage Grotesque + Figtree', dots: ['#B5432A', '#D0683C', '#8F9B5A', '#F4F5F1'] },
   { id: 'autumn', name: 'Autumn', tag: 'Maple, pumpkin & falling leaves', font: 'Fraunces + Figtree', dots: ['#7F2A17', '#D86F1F', '#E9A43A', '#B23A50'] },
+  { id: 'honu', name: 'Honu Lagoon', tag: 'Sea turtles in a turquoise lagoon', font: 'Lexend + Mulish', dots: ['#075A68', '#1BA6A6', '#F2E2BE', '#E8673F'] },
   { id: 'gelato', name: 'Gelato', tag: 'Strawberry & pistachio pastels', font: 'Fredoka + Nunito', dots: ['#FFB8CF', '#C8EFB4', '#E8457A', '#FBF7FA'] }
 ];
 export const skinOf = (id) => SKINS.find((k) => k.id === id) || SKINS[0];

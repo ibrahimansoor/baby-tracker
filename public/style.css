@@ -1,6 +1,6 @@
 /* ==========================================================
    My Little Pomodoro — theme engine
-   Six Italian-inspired skins (data-skin) × light/dark mode (data-theme).
+   Eight skins (data-skin) × light/dark mode (data-theme).
    Each skin sets fonts, accent, hero gradient and light/dark surfaces;
    the mode blocks below pick the right set.
    ========================================================== */
@@ -1221,6 +1221,94 @@ body::after {
 }
 .sc-sprinkle { transform-origin: center; animation: sc-sprinkle 12s linear infinite; }
 @keyframes sc-sprinkle { from { transform: translateY(0) rotate(0); opacity: 0; } 10% { opacity: .9; } 90% { opacity: .8; } to { transform: translateY(-300px) rotate(540deg); opacity: 0; } }
+
+/* ==========================================================
+   Honu Lagoon — sea turtles in a turquoise lagoon (an eighth skin)
+   ========================================================== */
+[data-skin="honu"] {
+  --display: "Lexend", system-ui, sans-serif;
+  --sans: "Mulish", system-ui, -apple-system, sans-serif;
+  --dw: 600; --dt: -.025em;
+  --radius: 26px;
+  --accent-l: #0E7C86; --accent-d: #4FD1C5;
+  --accent-soft-l: #DDF1F0; --accent-soft-d: #0F2B2E;
+  --hero: linear-gradient(170deg, #075A68 0%, #0C7D88 42%, #1BA6A6 78%, #6FD3C4 118%);
+  --hero-shadow: 0 22px 44px -18px rgba(12, 125, 136, .55);
+  --on-hero: #FFFFFF; --on-hero-2: rgba(232, 250, 247, .9);
+  --glass: rgba(255, 255, 255, .14); --glass-line: rgba(220, 250, 246, .3);
+  --l-bg: #F0F7F6; --l-surface: #FFFFFF; --l-surface-2: #E5F1EF; --l-line: #D5E7E4;
+  --d-bg: #051214; --d-surface: #0C1E21; --d-surface-2: #13292D; --d-line: #1C363B;
+  --pat: url(#pat-honu);
+  --pat-op: .16;
+  --tab-active: #0E7C86;
+}
+
+/* Every activity colour re-tinted to the reef */
+:root[data-skin="honu"] {
+  --pink: #D64A6E;      --pink-soft: #FBE4EA;      /* breastfeed — hibiscus */
+  --riviera: #1A6FA3;   --riviera-soft: #DFEDF6;   /* bottle — deep water */
+  --lemon: #C9930F;     --lemon-soft: #FAF0D4;     /* pee — sunlit sand */
+  --espresso: #7E5A3C;  --espresso-soft: #F1E8DE;  /* poop — driftwood */
+  --violet: #6E58B8;    --violet-soft: #ECE8F8;    /* sleep — twilight */
+  --teal: #2E8B6F;      --teal-soft: #DDF1EA;      /* pump — honu green */
+  --orange: #E0633B;    --orange-soft: #FCE7DF;    /* solids — coral */
+  --basil: #4E8A3A;     --basil-soft: #E6F1DF;     /* growth — seagrass */
+  --slate: #5F7480;     --slate-soft: #E7EDF0;     /* notes — reef stone */
+}
+:root[data-skin="honu"][data-theme="dark"] {
+  --pink: #F57B99;      --pink-soft: #351620;
+  --riviera: #63B4E8;   --riviera-soft: #0E2433;
+  --lemon: #F0C24E;     --lemon-soft: #2D240C;
+  --espresso: #D4A47E;  --espresso-soft: #291E15;
+  --violet: #ADA0F0;    --violet-soft: #1F1B36;
+  --teal: #5ED3AE;      --teal-soft: #0E2A22;
+  --orange: #FF9470;    --orange-soft: #341A10;
+  --basil: #93CF78;     --basil-soft: #172615;
+  --slate: #A7B9C3;     --slate-soft: #1A2328;
+  --on-accent: #052326; --tab-active: #4FD1C5; --on-tab: #052326;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="honu"]:not([data-theme="light"]) {
+    --pink: #F57B99;      --pink-soft: #351620;
+    --riviera: #63B4E8;   --riviera-soft: #0E2433;
+    --lemon: #F0C24E;     --lemon-soft: #2D240C;
+    --espresso: #D4A47E;  --espresso-soft: #291E15;
+    --violet: #ADA0F0;    --violet-soft: #1F1B36;
+    --teal: #5ED3AE;      --teal-soft: #0E2A22;
+    --orange: #FF9470;    --orange-soft: #341A10;
+    --basil: #93CF78;     --basil-soft: #172615;
+    --slate: #A7B9C3;     --slate-soft: #1A2328;
+    --on-accent: #052326; --tab-active: #4FD1C5; --on-tab: #052326;
+  }
+}
+:root[data-skin="honu"] .tabbar { background: rgba(4, 42, 50, .94); }
+
+/* Scene — sunbeams, bubbles, seagrass and two gliding turtles */
+.sc-ray { animation: sc-ray 9s ease-in-out infinite alternate; }
+@keyframes sc-ray { from { opacity: .35; transform: skewX(-4deg); } to { opacity: 1; transform: skewX(5deg); } }
+.sc-surf { animation-duration: 10s; }
+.sc-sand { animation-duration: 120s; }
+.sc-grass { transform-origin: 50% 100%; animation: sc-cypress 4.6s ease-in-out infinite alternate; }
+.sc-bubble { animation: sc-bubble 9s linear infinite; }
+@keyframes sc-bubble { 0% { transform: translate(0, 0); opacity: 0; } 10% { opacity: .9; } 50% { transform: translate(6px, -130px); } 90% { opacity: .7; } 100% { transform: translate(-3px, -270px); opacity: 0; } }
+.sc-honu { animation: sc-swim 46s linear infinite; animation-delay: -16s; }
+.sc-honu-baby { animation-delay: -15s; }
+@keyframes sc-swim { from { transform: translate(-80px, 14px); } to { transform: translate(520px, -18px); } }
+.sc-bob { animation: sc-bob 3.6s ease-in-out infinite alternate; }
+@keyframes sc-bob { from { transform: translateY(-3px); } to { transform: translateY(4px); } }
+.sc-flip { animation: sc-paddle 1.8s ease-in-out infinite alternate; }
+.sc-flip-f { transform-origin: 0% 0%; }
+.sc-flip-r { transform-origin: 100% 0%; animation-duration: 2.4s; }
+@keyframes sc-paddle { from { transform: rotate(-16deg); } to { transform: rotate(14deg); } }
+@media (prefers-reduced-motion: reduce) { .sc-honu { transform: translate(250px, 0); } .sc-honu-baby { transform: translate(250px, 0); } }
+
+/* Signature — a little turtle shell before headings, shell-shaped icons, a gentle tide on cards */
+[data-skin="honu"] .section-title h2::before {
+  content: ""; display: inline-block; width: 14px; height: 11px; margin-right: 13px; vertical-align: 1px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #7DBA7E, #4E8C5E 60%, #2F6347); box-shadow: 0 0 0 1.5px #E8D9A8, 9px 0 0 -2.4px #5FA67A;
+}
+[data-skin="honu"] .action .ico, [data-skin="honu"] .entry .ico, [data-skin="honu"] .timer-card .ico { border-radius: 50% 50% 44% 44% / 58% 58% 42% 42%; }
+[data-skin="honu"] .card, [data-skin="honu"] .entry, [data-skin="honu"] .timer-card { box-shadow: 0 1px 0 rgba(14, 124, 134, .05), 0 12px 26px -18px rgba(7, 90, 104, .38); }
 
 /* ==========================================================
    Signature details per theme
